@@ -1,5 +1,5 @@
 import user from '../model/user';
-import orderService from '../service/order';
+import orderService from './pokemon';
 import { BadRequestError, NotFoundError } from '../js/httpError';
 
 class UserService {

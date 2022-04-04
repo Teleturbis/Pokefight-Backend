@@ -10,8 +10,8 @@ const generatePassword = async (password) => {
 };
 
 //compare password
-const comparePassword = async (inputPw, dbPw) => {
-  return await bcrypt.compare(inputPw, dbPw);
+const comparePassword = async (inputPw, hashedPw) => {
+  return await bcrypt.compare(inputPw, hashedPw);
 };
 
 export { generatePassword, comparePassword };
