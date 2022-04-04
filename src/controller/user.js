@@ -21,6 +21,16 @@ class UserController {
     }
   }
 
+  async logoutUser(req, res, next) {
+    try {
+      const result = await userService.logoutUser(req.user.id);
+
+      if (result) return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUsers(req, res, next) {
     try {
       return res.status(200).json(await userService.getUsers());

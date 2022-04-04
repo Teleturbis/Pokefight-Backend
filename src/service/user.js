@@ -21,6 +21,13 @@ class UserService {
     throw new Error('Error Login');
   }
 
+  async logoutUser(id) {
+    const result = await user.isOnOffline(id, false);
+    if (result) return await user.getUser(id);
+
+    throw new Error('Error logout');
+  }
+
   async getUsers() {
     const usersDB = await user.getUsers();
 

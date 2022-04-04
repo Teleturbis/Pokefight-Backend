@@ -30,6 +30,13 @@ routesUser.post(
 );
 
 routesUser.get(
+  '/:id/logout',
+  validate([param('id').isNumeric()]),
+  checkUserExists,
+  userController.logoutUser
+);
+
+routesUser.get(
   '/:id',
   validate([param('id').isNumeric()]),
   checkUserExists,
