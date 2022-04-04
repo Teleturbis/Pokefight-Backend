@@ -3,10 +3,11 @@ import http from 'http';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cors from 'cors';
+import mongoose from 'mongoose';
 
 import { routesUser } from './routes/user';
-import { routesOrder } from './routes/order';
-import { BadRequestError, NotFoundError } from './js/HttpError';
+import { routesPokemon } from './routes/pokemon';
+import { BadRequestError, NotFoundError } from './js/httpError';
 import logRequest from './middleware/logRequest';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -18,6 +19,20 @@ console.log('NODE_ENV >> ', process.env.NODE_ENV);
 const app = express();
 
 const PORT = process.env.PORT ?? 3001;
+
+//Set up default mongoose connection
+let mongoDB = 'mongodb://localhost:27017/pokefight';
+if (process.env.DB_MONGO_ATLAS_PW) {
+  console.log('!! Atlas !!');
+  mongoDB = `mongodb+srv://tomesde:${process.env.DB_MONGO_ATLAS_PW}@cluster0.gz6ha.mongodb.net/pokefight?retryWrites=true&w=majority`;
+}
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+
+//Get the default connection
+var db = mongoose.connection;
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 /** Parse the request */
 app.use(express.urlencoded({ extended: false }));
@@ -32,7 +47,7 @@ app.use(logRequest);
 
 /** Routes */
 app.use('/user', routesUser);
-app.use('/order', routesOrder);
+app.use('/pokemon', routesPokemon);
 
 /** images & co */
 app.use(express.static('public'));

@@ -1,6 +1,6 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
-import { BadRequestError } from '../js/HttpError';
+import { BadRequestError } from './httpError';
 
 // parallel processing
 const validate = (validations) => {
