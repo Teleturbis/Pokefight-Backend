@@ -1,6 +1,5 @@
 import { BadRequestError, NotFoundError } from '../js/HttpError';
 import userService from '../service/user';
-import user from '/users/schmi/documents/_devel/wbs/pokefight-backend-db/src/controller/user';
 
 class UserController {
   async createUser(req, res, next) {
