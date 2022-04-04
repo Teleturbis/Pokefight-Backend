@@ -1,10 +1,11 @@
 import { BadRequestError, NotFoundError } from '../js/httpError';
 import userService from '../service/user';
+import userServiceMongo from '../service/user-mongo';
 
 class UserController {
   async createUser(req, res, next) {
     try {
-      const id = await userService.createUser(req.body);
+      const id = await userServiceMongo.createUser(req.body);
       if (!id) throw new Error('Error createUser');
 
       return res.status(200).json({ id: id });
@@ -15,7 +16,7 @@ class UserController {
 
   async loginUser(req, res, next) {
     try {
-      return res.status(200).json(await userService.loginUser(req.body));
+      return res.status(200).json(await userServiceMongo.loginUser(req.body));
     } catch (error) {
       next(error);
     }
@@ -23,7 +24,7 @@ class UserController {
 
   async logoutUser(req, res, next) {
     try {
-      const result = await userService.logoutUser(req.user.id);
+      const result = await userServiceMongo.logoutUser(req.user.id);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -33,7 +34,7 @@ class UserController {
 
   async getUsers(req, res, next) {
     try {
-      return res.status(200).json(await userService.getUsers());
+      return res.status(200).json(await userServiceMongo.getUsers());
     } catch (error) {
       next(error);
     }
@@ -46,6 +47,8 @@ class UserController {
       next(error);
     }
   }
+
+  // ######################## OLD
 
   async editUser(req, res, next) {
     try {

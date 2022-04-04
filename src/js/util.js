@@ -11,6 +11,8 @@ const generatePassword = async (password) => {
 
 //compare password
 const comparePassword = async (inputPw, hashedPw) => {
+  console.log('inputPw', inputPw);
+  console.log(hashedPw);
   return await bcrypt.compare(inputPw, hashedPw);
 };
 
