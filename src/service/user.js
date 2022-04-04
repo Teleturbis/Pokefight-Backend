@@ -1,17 +1,24 @@
 import user from '../model/user';
 import orderService from '../service/order';
+import { BadRequestError, NotFoundError } from '../js/httpError';
 
 class UserService {
   async createUser(userDto) {
-    const { username, email, password } = userDto;
+    const { username, email, password, validated } = userDto;
 
-    return user.createUser(username, email, password);
+    return user.createUser(username, email, password, validated);
   }
 
   async loginUser(userDto) {
     const { type, password } = userDto;
 
-    return user.loginUser(userDto.user, type, password);
+    const id = await user.loginUser(userDto.user, type, password);
+    if (!id) throw new BadRequestError('Login failed');
+
+    const result = await user.isOnOffline(id, true);
+    if (result) return await user.getUser(id);
+
+    throw new Error('Error Login');
   }
 
   async getUsers() {
@@ -63,12 +70,14 @@ class UserService {
   }
 
   async editUser(id, userDto) {
-    const { username, email, password } = userDto;
+    const { username, email, password, token, validated } = userDto;
     const userDB = await user.updateUser(
       id,
       username,
       email,
-      password === null ? false : active
+      password,
+      token,
+      validated
     );
 
     console.log('userDB', userDB);

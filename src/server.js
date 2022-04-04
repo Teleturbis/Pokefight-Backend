@@ -6,7 +6,7 @@ import cors from 'cors';
 
 import { routesUser } from './routes/user';
 import { routesOrder } from './routes/order';
-import { BadRequestError, NotFoundError } from './js/HttpError';
+import { BadRequestError, NotFoundError } from './js/httpError';
 import logRequest from './middleware/logRequest';
 
 if (process.env.NODE_ENV !== 'production') {

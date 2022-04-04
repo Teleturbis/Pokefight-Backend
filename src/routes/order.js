@@ -2,7 +2,7 @@ import express from 'express';
 import orderController from '../controller/order';
 // ...rest of the initial code omitted for simplicity.
 import { body, param } from 'express-validator';
-import validate from './validate';
+import validate from '../js/validate';
 
 const routesOrder = express.Router();
 

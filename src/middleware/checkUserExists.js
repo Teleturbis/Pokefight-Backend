@@ -1,5 +1,5 @@
 // express middleware logRequest.js
-import { NotFoundError } from '../js/HttpError';
+import { NotFoundError } from '../js/httpError';
 import userService from '../service/user';
 
 export default async (req, res, next) => {

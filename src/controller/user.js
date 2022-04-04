@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from '../js/HttpError';
+import { BadRequestError, NotFoundError } from '../js/httpError';
 import userService from '../service/user';
 
 class UserController {
@@ -15,10 +15,7 @@ class UserController {
 
   async loginUser(req, res, next) {
     try {
-      const id = await userService.loginUser(req.body);
-      if (!id) throw new BadRequestError('Login failed');
-
-      return res.status(200).json(await userService.getUser(id));
+      return res.status(200).json(await userService.loginUser(req.body));
     } catch (error) {
       next(error);
     }

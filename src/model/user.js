@@ -1,12 +1,13 @@
 import db from '../db/db';
 
 class User {
-  async createUser(username, email, password) {
+  async createUser(username, email, password, validated = false) {
     const [id] = await db('user_pokefight')
       .insert({
         username: username,
         email: email,
         password: password,
+        validated: validated,
       })
       .returning('id');
 
@@ -28,7 +29,7 @@ class User {
     } else {
       const [userRow] = await db('user_pokefight')
         .select({
-          id: id,
+          id: 'id',
           username: 'username',
         })
         .where({ email: user, password: password });
@@ -46,6 +47,7 @@ class User {
       email: 'email',
       password: 'password',
       online: 'online',
+      validated: 'validated',
     });
 
     return result;
@@ -67,13 +69,25 @@ class User {
     return result;
   }
 
-  async updateUser(id, username, email, password, online = false) {
+  async updateUser(id, username, email, password, token, validated = false) {
     // throw new Error('test error db update');
     const result = await db('user_pokefight')
       .update({
         username: username,
         email: email,
-        password: password,
+        // password: password,
+        validated: validated,
+        token: token,
+      })
+      .where({ id: id });
+
+    return result === 1;
+  }
+
+  async isOnOffline(id, online = true) {
+    console.log('id', id);
+    const result = await db('user_pokefight')
+      .update({
         online: online,
       })
       .where({ id: id });

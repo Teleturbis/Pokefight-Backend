@@ -1,4 +1,4 @@
-import { NotFoundError } from '../js/HttpError';
+import { NotFoundError } from '../js/httpError';
 import orderService from '../service/order';
 
 class OrderController {
