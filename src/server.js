@@ -21,7 +21,11 @@ const app = express();
 const PORT = process.env.PORT ?? 3001;
 
 //Set up default mongoose connection
-const mongoDB = 'mongodb://localhost:27017/pokefight';
+let mongoDB = 'mongodb://localhost:27017/pokefight';
+if (process.env.DB_MONGO_ATLAS_PW) {
+  console.log('!! Atlas !!');
+  mongoDB = `mongodb+srv://tomesde:${process.env.DB_MONGO_ATLAS_PW}@cluster0.gz6ha.mongodb.net/pokefight?retryWrites=true&w=majority`;
+}
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 
 //Get the default connection

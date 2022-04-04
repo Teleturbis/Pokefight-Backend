@@ -10,9 +10,7 @@ class PokemonService {
 
   async getPokemons() {
     const pokemonsDB = await pokemon.find({});
-    console.log('pokemonDB', pokemonDB);
     // const pokemonsDB = pokedex;
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
 
     return pokemonsDB;
   }
@@ -22,7 +20,6 @@ class PokemonService {
     // const pokemonDB = pokedex.find((pokemon) => pokemon.id === +id);
 
     console.log('pokemonDB', pokemonDB);
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
 
     return pokemonDB;
   }
@@ -32,10 +29,11 @@ class PokemonService {
     // const pokemonDB = pokedex.find((pokemon) => pokemon.id === +id);
 
     console.log('pokemonDB', pokemonDB[0]);
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
 
     return pokemonDB[0][info];
   }
+
+  // ################################## OLD
 
   async getPokemonsByUser(userId) {
     const pokemonsDB = await pokemon.getPokemonsByUser(userId);
