@@ -21,7 +21,12 @@ class UserService {
   async loginUser(userDto) {
     const { type, password } = userDto;
 
-    const [userDB] = await user.find({ email: userDto.user });
+    const whereObj =
+      type === 'username'
+        ? { username: userDto.user }
+        : { email: userDto.user };
+
+    const [userDB] = await user.find(whereObj);
     console.log('userDB', userDB);
     if (
       userDB?.password &&
