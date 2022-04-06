@@ -4,11 +4,14 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { instrument } from '@socket.io/admin-ui';
 
 import { routesUser } from './routes/user';
 import { routesPokemon } from './routes/pokemon';
+import { routesAdmin } from './routes/admin';
 import { BadRequestError, NotFoundError } from './js/httpError';
 import logRequest from './middleware/logRequest';
+import MySocketServer from './socket/socket';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -76,7 +79,18 @@ app.use((error, req, res, next) => {
 
 /** Server */
 const httpServer = http.createServer(app);
+const mySocketServer = new MySocketServer(httpServer);
+
+const setAdminSocketServer = (req, res, next) => {
+  req.io = mySocketServer.io;
+  next();
+};
+
+app.use('/admin', setAdminSocketServer, routesAdmin);
+
+instrument(mySocketServer.io, { auth: false });
+
 httpServer.listen(PORT, () => {
   console.log(`The server is running on port ${PORT}`);
-  console.log(`Example: http://localhost:${PORT}/user/1`);
+  console.log(`Example: http://localhost:${PORT}/user`);
 });
