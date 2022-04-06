@@ -4,7 +4,9 @@ import userController from '../controller/user';
 // ...rest of the initial code omitted for simplicity.
 import { body, param } from 'express-validator';
 import validate from '../js/validate';
-import checkUserExists from '../middleware/checkUserExists';
+import checkUserExists, {
+  checkUserExistsMongo,
+} from '../middleware/checkUserExists';
 
 const routesUser = express.Router();
 
@@ -31,15 +33,15 @@ routesUser.post(
 
 routesUser.get(
   '/:id/logout',
-  validate([param('id').isNumeric()]),
-  checkUserExists,
+  validate([param('id').isString()]),
+  checkUserExistsMongo,
   userController.logoutUser
 );
 
 routesUser.get(
   '/:id',
-  validate([param('id').isNumeric()]),
-  checkUserExists,
+  validate([param('id').isString()]),
+  checkUserExistsMongo,
   userController.getUser
 );
 
@@ -51,28 +53,28 @@ routesUser.put(
     body('email').not().isEmpty().withMessage('Email is required'),
     body('password').not().isEmpty().withMessage('Password is required'),
   ]),
-  checkUserExists,
+  checkUserExistsMongo,
   userController.editUser
 );
 
 routesUser.delete(
   '/:id',
   validate([param('id').isNumeric()]),
-  checkUserExists,
+  checkUserExistsMongo,
   userController.deleteUser
 );
 
 routesUser.get(
   '/:id/orders',
   validate([param('id').isNumeric()]),
-  checkUserExists,
+  checkUserExistsMongo,
   userController.getUserOrders
 );
 
 routesUser.put(
   '/:id/check-inactive',
   validate([param('id').isNumeric()]),
-  checkUserExists,
+  checkUserExistsMongo,
   userController.checkInactive
 );
 

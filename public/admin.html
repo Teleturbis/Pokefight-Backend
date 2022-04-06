@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Input</title>
+  </head>
+  <body>
+    <button type="button" onclick="callUrl('/admin/startSimulation')">
+      Start Simulation
+    </button>
+    <button type="button" onclick="callUrl('/admin/stopSimulation')">
+      Stop Simulation
+    </button>
+  </body>
+
+  <script>
+    function callUrl(url) {
+      var oReq = new XMLHttpRequest();
+      oReq.open('get', url, true);
+      oReq.send();
+    }
+  </script>
+</html>

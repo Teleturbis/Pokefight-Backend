@@ -10,7 +10,8 @@ use('pokefight');
 // Make sure you run it against the correct database and collection.
 // db.pokemons.find({ date: { $gte: new Date('2014-04-04'), $lt: new Date('2014-04-05') } });
 // db.pokemons.find({id : 10});
-db.pokemons.find({});
+db.users.find({});
+// db.users.find({_id: '624b6c0ac5dcd8dc4a577532'});
 
 // Build an aggregation to view total sales for each product in 2014.
 // const aggregation = [
