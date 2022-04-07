@@ -3,12 +3,10 @@ import express from 'express';
 // ...rest of the initial code omitted for simplicity.
 import { body, param } from 'express-validator';
 import validate from '../js/validate';
-import checkUserExists, {
-  checkUserExistsMongo,
-} from '../middleware/checkUserExists';
+import checkUserExists from '../middleware/checkUserExists';
 
 import controller from '../controller/user';
-import service from '../service/user-mongo';
+import service from '../service/user';
 import schema from '../model/user';
 
 const routesUser = express.Router();
@@ -37,7 +35,7 @@ routesUser.post(
 routesUser.get(
   '/:id/logout',
   validate([param('id').isString()]),
-  checkUserExistsMongo,
+  checkUserExists,
   controller.logoutUser
 );
 
@@ -47,22 +45,28 @@ routesUser.put(
     param('id').isString(),
     body('password').not().isEmpty().withMessage('Password is required'),
   ]),
-  checkUserExistsMongo,
+  checkUserExists,
   controller.changePassword
 );
 
 routesUser.get(
   '/:id',
   validate([param('id').isString()]),
-  checkUserExistsMongo,
+  checkUserExists,
   controller.getUser
 );
 
 routesUser.delete(
   '/:id',
   validate([param('id').isString()]),
-  checkUserExistsMongo,
+  checkUserExists,
   controller.deleteUser
+);
+
+routesUser.get(
+  '/:id/character',
+  validate([param('id').isString()]),
+  controller.getUserCharacter
 );
 
 // routesUser.put(
@@ -73,21 +77,21 @@ routesUser.delete(
 //     body('email').not().isEmpty().withMessage('Email is required'),
 //     body('password').not().isEmpty().withMessage('Password is required'),
 //   ]),
-//   checkUserExistsMongo,
+//   checkUserExists,
 //   userController.editUser
 // );
 
 // routesUser.get(
 //   '/:id/orders',
 //   validate([param('id').isString()]),
-//   checkUserExistsMongo,
+//   checkUserExists,
 //   userController.getUserOrders
 // );
 
 // routesUser.put(
 //   '/:id/check-inactive',
 //   validate([param('id').isString()]),
-//   checkUserExistsMongo,
+//   checkUserExists,
 //   userController.checkInactive
 // );
 

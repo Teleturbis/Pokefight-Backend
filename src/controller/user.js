@@ -1,11 +1,12 @@
 import { BadRequestError, NotFoundError } from '../js/httpError';
-import userServiceMongo from '../service/user-mongo';
 import BaseController from './controllerBase';
+import userService from '../service/user';
+import characterService from '../service/character';
 
 class UserController extends BaseController {
   async createUser(req, res, next) {
     try {
-      const id = await userServiceMongo.createUser(req.body);
+      const id = await userService.createUser(req.body);
       if (!id) throw new Error('Error createUser');
 
       return res.status(200).json({ id: id });
@@ -16,7 +17,7 @@ class UserController extends BaseController {
 
   async loginUser(req, res, next) {
     try {
-      return res.status(200).json(await userServiceMongo.loginUser(req.body));
+      return res.status(200).json(await userService.loginUser(req.body));
     } catch (error) {
       next(error);
     }
@@ -24,7 +25,7 @@ class UserController extends BaseController {
 
   async logoutUser(req, res, next) {
     try {
-      const result = await userServiceMongo.logoutUser(req.user.id);
+      const result = await userService.logoutUser(req.user.id);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -34,10 +35,7 @@ class UserController extends BaseController {
 
   async changePassword(req, res, next) {
     try {
-      const result = await userServiceMongo.changePassword(
-        req.user.id,
-        req.body
-      );
+      const result = await userService.changePassword(req.user.id, req.body);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -47,7 +45,7 @@ class UserController extends BaseController {
 
   async getUsers(req, res, next) {
     try {
-      return res.status(200).json(await userServiceMongo.getUsers());
+      return res.status(200).json(await userService.getUsers());
     } catch (error) {
       next(error);
     }
@@ -63,9 +61,19 @@ class UserController extends BaseController {
 
   async deleteUser(req, res, next) {
     try {
-      const result = await userServiceMongo.deleteUser(req.user.id);
+      const result = await userService.deleteUser(req.user.id);
 
       if (result) return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUserCharacter(req, res, next) {
+    try {
+      const result = await characterService.getCharacterByUser(req.params.id);
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
     } catch (error) {
       next(error);
     }
@@ -75,7 +83,7 @@ class UserController extends BaseController {
 
   async editUser(req, res, next) {
     try {
-      const result = await userServiceMongo.editUser(req.user.id, req.body);
+      const result = await userService.editUser(req.user.id, req.body);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -85,7 +93,7 @@ class UserController extends BaseController {
 
   async deleteUser(req, res, next) {
     try {
-      const result = await userServiceMongo.deleteUser(req.user.id);
+      const result = await userService.deleteUser(req.user.id);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -95,7 +103,7 @@ class UserController extends BaseController {
 
   async getUserOrders(req, res, next) {
     try {
-      const result = await userServiceMongo.getUserOrders(req.user.id);
+      const result = await userService.getUserOrders(req.user.id);
 
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());
@@ -106,7 +114,7 @@ class UserController extends BaseController {
 
   async checkInactive(req, res, next) {
     try {
-      const result = await userServiceMongo.checkInactive(req.user.id);
+      const result = await userService.checkInactive(req.user.id);
 
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());

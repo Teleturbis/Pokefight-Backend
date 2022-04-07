@@ -30,12 +30,6 @@ routesCharacter.delete(
   controller.deleteById(service, schema)
 );
 
-routesCharacter.get(
-  '/user/:id',
-  validate([param('id').isString()]),
-  controller.getUserCharacter
-);
-
 // routesItem.get(
 //   '/:id/:info',
 //   validate([param('id').isString()]),

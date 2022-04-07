@@ -13,16 +13,6 @@ class CharacterController extends BaseController {
     }
   }
 
-  async getUserCharacter(req, res, next) {
-    try {
-      const result = await characterService.getCharacterByUser(req.params.id);
-      if (result) return res.status(200).json(result);
-      else return next(new NotFoundError());
-    } catch (error) {
-      next(error);
-    }
-  }
-
   // async getCharacters(req, res, next) {
   //   try {
   //     const result = await characterService.getCharacters();
