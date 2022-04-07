@@ -1,36 +1,39 @@
 import express from 'express';
-import pokemonController from '../controller/pokemon';
 // ...rest of the initial code omitted for simplicity.
 import { body, param } from 'express-validator';
 import validate from '../js/validate';
 
+import controller from '../controller/pokemon';
+import service from '../service/pokemon';
+import schema from '../model/pokemon';
+
 const routesPokemon = express.Router();
 
-routesPokemon.get('/', pokemonController.getPokemons);
+routesPokemon.post(
+  '/',
+  validate([body('name').exists().withMessage('No data found')]),
+  controller.create(service, schema)
+);
+
+routesPokemon.get('/', controller.get(service, schema));
 
 routesPokemon.get(
   '/:id',
   validate([param('id').isString()]),
-  pokemonController.getPokemon
+  controller.getById(service, schema)
 );
 
 routesPokemon.get(
   '/:id/:info',
   validate([param('id').isString()]),
   validate([param('info').exists()]),
-  pokemonController.getPokemonInfo
+  controller.getPokemonInfo
 );
 
 routesPokemon.delete(
   '/:id',
   validate([param('id').isString()]),
-  pokemonController.deletePokemon
-);
-
-routesPokemon.post(
-  '/',
-  validate([body('name').exists().withMessage('No data found')]),
-  pokemonController.createPokemon
+  controller.deleteById(service, schema)
 );
 
 // routesPokemon.put(

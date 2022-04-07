@@ -1,7 +1,8 @@
 import { NotFoundError } from '../js/httpError';
 import pokemonService from '../service/pokemon';
+import BaseController from './controllerBase';
 
-class PokemonController {
+class PokemonController extends BaseController {
   async createPokemon(req, res, next) {
     try {
       const id = await pokemonService.createPokemon(req.body);

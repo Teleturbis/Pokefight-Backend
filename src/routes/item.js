@@ -3,9 +3,8 @@ import express from 'express';
 import { body, param } from 'express-validator';
 import validate from '../js/validate';
 
-// import itemController from '../controller/item';
-import controllerBase from '../controller/controllerBase';
-import ServiceBase from '../service/serviceBase';
+import controller from '../controller/item';
+import service from '../service/item';
 import schema from '../model/item';
 
 const routesItem = express.Router();
@@ -13,22 +12,22 @@ const routesItem = express.Router();
 routesItem.post(
   '/',
   validate([body('name').exists().withMessage('No data found')]),
-  controllerBase.create(new ServiceBase(), schema)
+  controller.create(service, schema)
 );
 
-routesItem.get('/', controllerBase.get(new ServiceBase(), schema));
+routesItem.get('/', controller.get(service, schema));
 
 routesItem.get(
   '/:id',
   validate([param('id').isString()]),
-  controllerBase.getById(new ServiceBase(), schema)
+  controller.getById(service, schema)
 );
 
 routesItem.delete(
   '/:id',
   validate([param('id').isString()]),
   // itemController.deleteItem
-  controllerBase.deleteById(new ServiceBase(), schema)
+  controller.deleteById(service, schema)
 );
 
 // routesItem.get(

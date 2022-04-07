@@ -3,9 +3,8 @@ import express from 'express';
 import { body, param } from 'express-validator';
 import validate from '../js/validate';
 
-import characterController from '../controller/character';
-import controllerBase from '../controller/controllerBase';
-import ServiceBase from '../service/serviceBase';
+import controller from '../controller/character';
+import service from '../service/character';
 import schema from '../model/character';
 
 const routesCharacter = express.Router();
@@ -13,28 +12,28 @@ const routesCharacter = express.Router();
 routesCharacter.post(
   '/',
   validate([body('name').exists().withMessage('No data found')]),
-  characterController.createCharacter
+  controller.createCharacter
 );
 
-routesCharacter.get('/', controllerBase.get(new ServiceBase(), schema));
+routesCharacter.get('/', controller.get(service, schema));
 
 routesCharacter.get(
   '/:id',
   validate([param('id').isString()]),
-  controllerBase.getById(new ServiceBase(), schema)
+  controller.getById(service, schema)
 );
 
 routesCharacter.delete(
   '/:id',
   validate([param('id').isString()]),
   // itemController.deleteItem
-  controllerBase.deleteById(new ServiceBase(), schema)
+  controller.deleteById(service, schema)
 );
 
 routesCharacter.get(
   '/user/:id',
   validate([param('id').isString()]),
-  characterController.getUserCharacter
+  controller.getUserCharacter
 );
 
 // routesItem.get(

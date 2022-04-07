@@ -127,4 +127,4 @@ class BaseController {
   // }
 }
 
-export default new BaseController();
+export default BaseController;

@@ -1,9 +1,10 @@
 import pokemon from '../model/pokemon';
 import mongoose from 'mongoose';
+import ServiceBase from './serviceBase';
 
 // import pokedex from '../model/pokedex.json';
 
-class PokemonService {
+class PokemonService extends ServiceBase {
   async createPokemon(pokemonDto) {
     pokemonDto._id = new mongoose.Types.ObjectId();
 

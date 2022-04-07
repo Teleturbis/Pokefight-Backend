@@ -1,9 +1,11 @@
 import { NotFoundError } from '../js/httpError';
 import path from 'path';
 import * as sim from '../js/simulate';
+import BaseController from './controllerBase';
 
-class AdminController {
+class AdminController extends BaseController {
   constructor() {
+    super();
     this.socketServer = 'test';
   }
 

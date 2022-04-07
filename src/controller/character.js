@@ -1,7 +1,8 @@
 import { NotFoundError } from '../js/httpError';
 import characterService from '../service/character';
+import BaseController from './controllerBase';
 
-class CharacterController {
+class CharacterController extends BaseController {
   async createCharacter(req, res, next) {
     try {
       const id = await characterService.createCharacter(req.body);

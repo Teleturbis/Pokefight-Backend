@@ -1,5 +1,4 @@
 import express from 'express';
-import userController from '../controller/user';
 
 // ...rest of the initial code omitted for simplicity.
 import { body, param } from 'express-validator';
@@ -8,9 +7,13 @@ import checkUserExists, {
   checkUserExistsMongo,
 } from '../middleware/checkUserExists';
 
+import controller from '../controller/user';
+import service from '../service/user-mongo';
+import schema from '../model/user';
+
 const routesUser = express.Router();
 
-routesUser.get('/', userController.getUsers);
+routesUser.get('/', controller.getUsers);
 routesUser.post(
   '/',
   validate([
@@ -18,7 +21,7 @@ routesUser.post(
     body('email').not().isEmpty().withMessage('Email is required'),
     body('password').not().isEmpty().withMessage('Password is required'),
   ]),
-  userController.createUser
+  controller.createUser
 );
 
 routesUser.post(
@@ -28,14 +31,14 @@ routesUser.post(
     body('type').not().isEmpty().withMessage('Type is required'),
     body('password').not().isEmpty().withMessage('Password is required'),
   ]),
-  userController.loginUser
+  controller.loginUser
 );
 
 routesUser.get(
   '/:id/logout',
   validate([param('id').isString()]),
   checkUserExistsMongo,
-  userController.logoutUser
+  controller.logoutUser
 );
 
 routesUser.put(
@@ -45,21 +48,21 @@ routesUser.put(
     body('password').not().isEmpty().withMessage('Password is required'),
   ]),
   checkUserExistsMongo,
-  userController.changePassword
+  controller.changePassword
 );
 
 routesUser.get(
   '/:id',
   validate([param('id').isString()]),
   checkUserExistsMongo,
-  userController.getUser
+  controller.getUser
 );
 
 routesUser.delete(
   '/:id',
   validate([param('id').isString()]),
   checkUserExistsMongo,
-  userController.deleteUser
+  controller.deleteUser
 );
 
 // routesUser.put(

@@ -1,7 +1,8 @@
 import { NotFoundError } from '../js/httpError';
 import itemService from '../service/item';
+import BaseController from './controllerBase';
 
-class ItemController {
+class ItemController extends BaseController {
   // async createItem(req, res, next) {
   //   try {
   //     const id = await itemService.createItem(req.body);

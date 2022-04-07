@@ -3,11 +3,11 @@
 
   ☐ character
     ☐ create -> check if already exists
-    ☐ sin-list (free and unlocked) + active skin 
+    ☐ skin-list (free and unlocked) + active skin 
     ☐ inventory
       ☐ pokemons
-        ☐ add
-        ☐ delete
-      ☐ items
-        ☐ add
-        ☐ delete
+        ☐ add /pokemon/:id/add/:userid oder /user/:id/addPokemon/:pokemonid
+        ☐ delete /pokemon/:id/delete/:userid oder /user/:id/deletePokemon/:pokemonid
+      ☐ items 
+        ☐ add /item/:id/add/:userid  oder /user/:id/addItem/:itemid
+        ☐ delete /item/:id/delete/:userid  oder /user/:id/addItem/:itemid

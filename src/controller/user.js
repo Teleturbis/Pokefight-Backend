@@ -1,7 +1,8 @@
 import { BadRequestError, NotFoundError } from '../js/httpError';
 import userServiceMongo from '../service/user-mongo';
+import BaseController from './controllerBase';
 
-class UserController {
+class UserController extends BaseController {
   async createUser(req, res, next) {
     try {
       const id = await userServiceMongo.createUser(req.body);
