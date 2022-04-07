@@ -9,6 +9,9 @@ import { instrument } from '@socket.io/admin-ui';
 import { routesUser } from './routes/user';
 import { routesPokemon } from './routes/pokemon';
 import { routesAdmin } from './routes/admin';
+import { routesItem } from './routes/item';
+import { routesCharacter } from './routes/character';
+
 import { BadRequestError, NotFoundError } from './js/httpError';
 import logRequest from './middleware/logRequest';
 import PokeSocketServer from './socket/socket';
@@ -51,6 +54,8 @@ app.use(logRequest);
 /** Routes */
 app.use('/user', routesUser);
 app.use('/pokemon', routesPokemon);
+app.use('/item', routesItem);
+app.use('/character', routesCharacter);
 
 /** images & co */
 app.use(express.static('public'));

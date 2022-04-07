@@ -1,0 +1,13 @@
+☐ user
+  ✔ changepw @done(22-04-07 17:09)
+
+  ☐ character
+    ☐ create -> check if already exists
+    ☐ sin-list (free and unlocked) + active skin 
+    ☐ inventory
+      ☐ pokemons
+        ☐ add
+        ☐ delete
+      ☐ items
+        ☐ add
+        ☐ delete

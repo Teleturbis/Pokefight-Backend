@@ -1,5 +1,4 @@
 import { BadRequestError, NotFoundError } from '../js/httpError';
-import userService from '../service/user';
 import userServiceMongo from '../service/user-mongo';
 
 class UserController {
@@ -32,6 +31,19 @@ class UserController {
     }
   }
 
+  async changePassword(req, res, next) {
+    try {
+      const result = await userServiceMongo.changePassword(
+        req.user.id,
+        req.body
+      );
+
+      if (result) return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUsers(req, res, next) {
     try {
       return res.status(200).json(await userServiceMongo.getUsers());
@@ -48,11 +60,21 @@ class UserController {
     }
   }
 
+  async deleteUser(req, res, next) {
+    try {
+      const result = await userServiceMongo.deleteUser(req.user.id);
+
+      if (result) return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // ######################## OLD
 
   async editUser(req, res, next) {
     try {
-      const result = await userService.editUser(req.user.id, req.body);
+      const result = await userServiceMongo.editUser(req.user.id, req.body);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -62,7 +84,7 @@ class UserController {
 
   async deleteUser(req, res, next) {
     try {
-      const result = await userService.deleteUser(req.user.id);
+      const result = await userServiceMongo.deleteUser(req.user.id);
 
       if (result) return res.status(200).json(result);
     } catch (error) {
@@ -72,7 +94,7 @@ class UserController {
 
   async getUserOrders(req, res, next) {
     try {
-      const result = await userService.getUserOrders(req.user.id);
+      const result = await userServiceMongo.getUserOrders(req.user.id);
 
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());
@@ -83,7 +105,7 @@ class UserController {
 
   async checkInactive(req, res, next) {
     try {
-      const result = await userService.checkInactive(req.user.id);
+      const result = await userServiceMongo.checkInactive(req.user.id);
 
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());

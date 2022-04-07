@@ -53,6 +53,20 @@ class UserService {
     // throw new Error('Error logout');
   }
 
+  async changePassword(id, userDto) {
+    const { password } = userDto;
+    const userDB = await user.findById(id);
+
+    userDB.password = await generatePassword(password);
+
+    const result = await userDB.save();
+
+    console.log('result', result);
+    // userDB.orders = await user.getUserOrders(userDB.id);
+
+    return result;
+  }
+
   async getUsers() {
     const usersDB = await user.find({});
 
@@ -68,6 +82,15 @@ class UserService {
 
     console.log('userDB', userDB);
     // userDB.orders = await orderService.getOrdersByUser(userDB.id);
+
+    return userDB;
+  }
+
+  async deleteUser(id) {
+    const userDB = await user.deleteOne({ _id: id });
+
+    console.log('userDB', userDB);
+    // userDB.orders = await user.getUserOrders(userDB.id);
 
     return userDB;
   }
@@ -114,15 +137,6 @@ class UserService {
       token,
       validated
     );
-
-    console.log('userDB', userDB);
-    // userDB.orders = await user.getUserOrders(userDB.id);
-
-    return userDB;
-  }
-
-  async deleteUser(id) {
-    const userDB = await user.deleteUser(id);
 
     console.log('userDB', userDB);
     // userDB.orders = await user.getUserOrders(userDB.id);

@@ -20,6 +20,7 @@ const pokemonSchema = new Schema({
     hp: Number,
     attack: Number,
     defense: Number,
+    specialAttack: Number,
     speed: Number,
   },
   moves: [

@@ -38,6 +38,16 @@ routesUser.get(
   userController.logoutUser
 );
 
+routesUser.put(
+  '/:id/change-password',
+  validate([
+    param('id').isString(),
+    body('password').not().isEmpty().withMessage('Password is required'),
+  ]),
+  checkUserExistsMongo,
+  userController.changePassword
+);
+
 routesUser.get(
   '/:id',
   validate([param('id').isString()]),
@@ -45,38 +55,38 @@ routesUser.get(
   userController.getUser
 );
 
-routesUser.put(
-  '/:id',
-  validate([
-    param('id').isNumeric(),
-    body('username').not().isEmpty().withMessage('User Name is required'),
-    body('email').not().isEmpty().withMessage('Email is required'),
-    body('password').not().isEmpty().withMessage('Password is required'),
-  ]),
-  checkUserExistsMongo,
-  userController.editUser
-);
-
 routesUser.delete(
   '/:id',
-  validate([param('id').isNumeric()]),
+  validate([param('id').isString()]),
   checkUserExistsMongo,
   userController.deleteUser
 );
 
-routesUser.get(
-  '/:id/orders',
-  validate([param('id').isNumeric()]),
-  checkUserExistsMongo,
-  userController.getUserOrders
-);
+// routesUser.put(
+//   '/:id',
+//   validate([
+//     param('id').isString(),
+//     body('username').not().isEmpty().withMessage('User Name is required'),
+//     body('email').not().isEmpty().withMessage('Email is required'),
+//     body('password').not().isEmpty().withMessage('Password is required'),
+//   ]),
+//   checkUserExistsMongo,
+//   userController.editUser
+// );
 
-routesUser.put(
-  '/:id/check-inactive',
-  validate([param('id').isNumeric()]),
-  checkUserExistsMongo,
-  userController.checkInactive
-);
+// routesUser.get(
+//   '/:id/orders',
+//   validate([param('id').isString()]),
+//   checkUserExistsMongo,
+//   userController.getUserOrders
+// );
+
+// routesUser.put(
+//   '/:id/check-inactive',
+//   validate([param('id').isString()]),
+//   checkUserExistsMongo,
+//   userController.checkInactive
+// );
 
 // can be reused by many routes
 
