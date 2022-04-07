@@ -1,0 +1,13 @@
+☐ user
+  ✔ changepw @done(22-04-07 17:09)
+
+  ☐ character
+    ☐ create -> check if already exists
+    ☐ skin-list (free and unlocked) + active skin 
+    ☐ inventory
+      ☐ pokemons
+        ☐ add /pokemon/:id/add/:userid oder /user/:id/addPokemon/:pokemonid
+        ☐ delete /pokemon/:id/delete/:userid oder /user/:id/deletePokemon/:pokemonid
+      ☐ items 
+        ☐ add /item/:id/add/:userid  oder /user/:id/addItem/:itemid
+        ☐ delete /item/:id/delete/:userid  oder /user/:id/addItem/:itemid

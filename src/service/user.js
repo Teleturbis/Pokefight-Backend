@@ -1,50 +1,101 @@
+import mongoose from 'mongoose';
 import user from '../model/user';
-import orderService from './pokemon';
 import { BadRequestError, NotFoundError } from '../js/httpError';
+import { comparePassword, generatePassword } from '../js/util';
 
 class UserService {
   async createUser(userDto) {
-    const { username, email, password, validated } = userDto;
+    // const { username, email, password, validated } = userDto;
 
-    return user.createUser(username, email, password, validated);
+    userDto._id = new mongoose.Types.ObjectId();
+    userDto.password = await generatePassword(userDto.password);
+
+    const doc = await user.create(userDto);
+    const _id = doc._id;
+
+    console.log('mongo-id', _id);
+
+    return _id;
   }
 
   async loginUser(userDto) {
     const { type, password } = userDto;
 
-    const id = await user.loginUser(userDto.user, type, password);
-    if (!id) throw new BadRequestError('Login failed');
+    const whereObj =
+      type === 'username'
+        ? { username: userDto.user }
+        : { email: userDto.user };
 
-    const result = await user.isOnOffline(id, true);
-    if (result) return await user.getUser(id);
+    const [userDB] = await user.find(whereObj);
+    console.log('userDB', userDB);
+    if (
+      userDB?.password &&
+      (await comparePassword(password, userDB.password))
+    ) {
+      userDB.online = true;
+      await user.updateOne({ _id: userDB._id }, userDB);
+
+      return await this.getUser(userDB._id);
+    } else {
+      throw new BadRequestError('Login failed');
+    }
 
     throw new Error('Error Login');
   }
 
   async logoutUser(id) {
-    const result = await user.isOnOffline(id, false);
-    if (result) return await user.getUser(id);
+    const userDB = await user.findById(id);
+    userDB.online = false;
+    await user.updateOne({ _id: userDB._id }, userDB);
 
-    throw new Error('Error logout');
+    return await this.getUser(userDB._id);
+
+    // throw new Error('Error logout');
+  }
+
+  async changePassword(id, userDto) {
+    const { password } = userDto;
+    const userDB = await user.findById(id);
+
+    userDB.password = await generatePassword(password);
+
+    const result = await userDB.save();
+
+    console.log('result', result);
+    // userDB.orders = await user.getUserOrders(userDB.id);
+
+    return result;
   }
 
   async getUsers() {
-    const usersDB = await user.getUsers();
+    const usersDB = await user.find({});
 
-    console.log('usersDB', usersDB.id);
+    console.log('usersDB', usersDB);
     // userDB.orders = await user.getUserOrders(userDB.id);
 
     return usersDB;
   }
 
   async getUser(id) {
-    const userDB = await user.getUser(id);
+    console.log('id', id);
+    const userDB = await user.findById(id);
 
     console.log('userDB', userDB);
     // userDB.orders = await orderService.getOrdersByUser(userDB.id);
 
     return userDB;
   }
+
+  async deleteUser(id) {
+    const userDB = await user.deleteOne({ _id: id });
+
+    console.log('userDB', userDB);
+    // userDB.orders = await user.getUserOrders(userDB.id);
+
+    return userDB;
+  }
+
+  // ######################## OLD
 
   async getUserOrders(id) {
     const userDB = await user.getUser(id);
@@ -86,15 +137,6 @@ class UserService {
       token,
       validated
     );
-
-    console.log('userDB', userDB);
-    // userDB.orders = await user.getUserOrders(userDB.id);
-
-    return userDB;
-  }
-
-  async deleteUser(id) {
-    const userDB = await user.deleteUser(id);
 
     console.log('userDB', userDB);
     // userDB.orders = await user.getUserOrders(userDB.id);
