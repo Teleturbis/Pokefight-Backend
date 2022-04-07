@@ -1,8 +1,16 @@
 import { Server } from 'socket.io';
 
-export default class MySocketServer {
+export default class PokeSocketServer {
   constructor(server) {
+    this.actionQueue = [];
+    this.ticInterval = 1000;
+
+    this.countActions = 0;
+    this.countProcessed = 0;
+
     this.io = new Server(server, { cors: { origin: '*' } });
+
+    this.interval = this.initActionTics();
 
     this.io.on('connection', (socket) => {
       console.log('a user connected', socket.id);
@@ -20,8 +28,10 @@ export default class MySocketServer {
       socket.on('action-event', (action, room) => {
         console.log('room', room);
         // this.io.volatile.emit('action-received', action); // volatile >> ignores disconnects, normal emit sends all stacked actions while disconnected
-        if (!room) this.io.emit('action-received', action);
-        else this.io.to(room).emit('action-received', action);
+        this.countActions++;
+        this.actionQueue.push(action);
+        // if (!room) this.io.emit('action-received', action);
+        // else this.io.to(room).emit('action-received', action);
       });
 
       socket.on('join-room', (room, cb) => {
@@ -40,6 +50,32 @@ export default class MySocketServer {
         }
       });
     });
+  }
+
+  setTicInterval(time) {
+    this.ticInterval = time;
+    this.interval = this.initActionTics();
+    console.log('actionsForTics -> countProcessed', this.countProcessed);
+    console.log('actionsForTics -> countActions', this.countActions);
+  }
+
+  initActionTics() {
+    clearInterval(this.interval);
+    const interval = setInterval(() => {
+      // console.log('tic... ' + this.ticInterval);
+      if (this.actionQueue.length > 0) {
+        const actionsForTic = [...this.actionQueue];
+        this.actionQueue.length = 0;
+
+        this.countProcessed += actionsForTic.length;
+        // console.log('actionsForTics -> countProcessed', this.countProcessed);
+        // console.log('actionsForTics -> countActions', this.countActions);
+
+        this.io.emit('action-received', actionsForTic);
+      }
+    }, this.ticInterval); // todo testing
+
+    return interval;
   }
 
   testSend(msg) {

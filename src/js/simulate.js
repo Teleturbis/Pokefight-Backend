@@ -97,7 +97,7 @@ export function weightedPick(arr) {
 
 export function generateTicObject() {
   let t = { actions: [] };
-  console.log('mobs', mobs);
+  // console.log('mobs', mobs);
 
   for (let i = 0; i < behavior.maxActionsPerTic; i++) {
     switch (weightedPick(behavior.actionsWeight).value) {
@@ -120,7 +120,7 @@ export function generateTicObject() {
     }
   }
 
-  console.log('tic', t);
+  // console.log('tic', t);
 
   return t;
 }

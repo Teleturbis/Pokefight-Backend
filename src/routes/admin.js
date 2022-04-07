@@ -9,5 +9,7 @@ const routesAdmin = express.Router();
 routesAdmin.get('/', adminController.showPage);
 routesAdmin.get('/startSimulation', adminController.startSimulation);
 routesAdmin.get('/stopSimulation', adminController.stopSimulation);
+routesAdmin.get('/tic/:time', adminController.setTicInterval);
+routesAdmin.get('/sim/:time', adminController.setSimInterval);
 
 export { routesAdmin };

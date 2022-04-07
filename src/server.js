@@ -11,7 +11,7 @@ import { routesPokemon } from './routes/pokemon';
 import { routesAdmin } from './routes/admin';
 import { BadRequestError, NotFoundError } from './js/httpError';
 import logRequest from './middleware/logRequest';
-import MySocketServer from './socket/socket';
+import PokeSocketServer from './socket/socket';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -79,18 +79,19 @@ app.use((error, req, res, next) => {
 
 /** Server */
 const httpServer = http.createServer(app);
-const mySocketServer = new MySocketServer(httpServer);
+const pokeSocketServer = new PokeSocketServer(httpServer);
 
 const setAdminSocketServer = (req, res, next) => {
-  req.io = mySocketServer.io;
+  // req.io = pokeSocketServer.io;
+  req.pokeSocketServer = pokeSocketServer;
   next();
 };
 
 app.use('/admin', setAdminSocketServer, routesAdmin);
 
-instrument(mySocketServer.io, { auth: false });
+instrument(pokeSocketServer.io, { auth: false });
 
 httpServer.listen(PORT, () => {
   console.log(`The server is running on port ${PORT}`);
-  console.log(`Example: http://localhost:${PORT}/user`);
+  console.log(`Example: http://localhost:${PORT}/admin`);
 });
