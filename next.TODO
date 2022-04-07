@@ -1,13 +1,27 @@
 ☐ user
   ✔ changepw @done(22-04-07 17:09)
+  ☐ friendslist
+    ☐ add {userid: _id, name: name, avatar: avatar}
+    ☐ remove
+    ☐ whisper
+  ☐ ignorelist
+    ☐ add {userid: _id, name: name, avatar: avatar}
+    ☐ unignore
 
   ☐ character
-    ☐ create -> check if already exists
+    ✔ create -> check if already exists @done(22-04-07 23:27)
     ☐ skin-list (free and unlocked) + active skin 
     ☐ inventory
       ☐ pokemons
-        ☐ add /pokemon/:id/add/:userid oder /user/:id/addPokemon/:pokemonid
-        ☐ delete /pokemon/:id/delete/:userid oder /user/:id/deletePokemon/:pokemonid
+        ✔ add /character/:id/addPokemon/:pokemonid @done(22-04-07 23:09)
+        ✔ remove /character/:id/deletePokemon/:pokemonid @done(22-04-07 23:16)
       ☐ items 
-        ☐ add /item/:id/add/:userid  oder /user/:id/addItem/:itemid
-        ☐ delete /item/:id/delete/:userid  oder /user/:id/addItem/:itemid
+        ✔ add /character/:id/addItem/:itemid @done(22-04-07 23:09)
+        ✔ use /character/:id/addItem/:itemid @done(22-04-07 23:23)
+
+☐ socket
+  ☐ middleware -> user-id?
+  ☐ socket conn gone -> logout user? (bad with dc)
+  ☐ whisper
+
+☐ jwt -> user logged state

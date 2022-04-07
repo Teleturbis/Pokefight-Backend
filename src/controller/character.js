@@ -13,6 +13,58 @@ class CharacterController extends BaseController {
     }
   }
 
+  async addPokemon(req, res, next) {
+    try {
+      const result = await characterService.addPokemon(
+        req.params.id,
+        req.params.pokemonId
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async removePokemon(req, res, next) {
+    try {
+      const result = await characterService.removePokemon(
+        req.params.id,
+        req.params.pokemonId
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addItem(req, res, next) {
+    try {
+      const result = await characterService.addItem(
+        req.params.id,
+        req.params.itemId
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async useItem(req, res, next) {
+    try {
+      const result = await characterService.useItem(
+        req.params.id,
+        req.params.itemId
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // async getCharacters(req, res, next) {
   //   try {
   //     const result = await characterService.getCharacters();

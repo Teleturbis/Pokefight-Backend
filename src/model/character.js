@@ -2,32 +2,35 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+const pokemonSchema = new Schema(
+  {
+    pokemonid: mongoose.Types.ObjectId,
+    stats: {
+      hp: Number,
+      attack: Number,
+      defense: Number,
+      specialAttack: Number,
+      speed: Number,
+    },
+  },
+  { _id: false }
+);
+
+const itemSchema = new Schema(
+  {
+    itemid: mongoose.Types.ObjectId,
+    name: String,
+    count: Number,
+  },
+  { _id: false }
+);
+
 const characterSchema = new Schema({
   name: String,
   skin: String,
-  userid: String,
-  pokemons: [
-    {
-      pokemonId: Number,
-      type: {
-        name: String,
-        stats: {
-          hp: Number,
-          attack: Number,
-          defense: Number,
-          specialAttack: Number,
-          speed: Number,
-        },
-      },
-    },
-  ],
-  items: [
-    {
-      itemid: String,
-      name: String,
-      count: Number,
-    },
-  ],
+  userid: mongoose.Types.ObjectId,
+  pokemons: [pokemonSchema],
+  items: [itemSchema],
 });
 
 export default mongoose.model('Character', characterSchema);

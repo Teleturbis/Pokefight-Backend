@@ -30,6 +30,30 @@ routesCharacter.delete(
   controller.deleteById(service, schema)
 );
 
+routesCharacter.post(
+  '/:id/addPokemon/:pokemonId',
+  validate([param('id').isString(), param('pokemonId').isString()]),
+  controller.addPokemon
+);
+
+routesCharacter.post(
+  '/:id/removePokemon/:pokemonId',
+  validate([param('id').isString(), param('pokemonId').isString()]),
+  controller.removePokemon
+);
+
+routesCharacter.post(
+  '/:id/addItem/:itemId',
+  validate([param('id').isString(), param('itemId').isString()]),
+  controller.addItem
+);
+
+routesCharacter.post(
+  '/:id/useItem/:itemId',
+  validate([param('id').isString(), param('itemId').isString()]),
+  controller.useItem
+);
+
 // routesItem.get(
 //   '/:id/:info',
 //   validate([param('id').isString()]),
