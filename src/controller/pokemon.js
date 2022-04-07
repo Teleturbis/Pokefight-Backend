@@ -49,17 +49,6 @@ class PokemonController {
     }
   }
 
-  async editPokemon(req, res, next) {
-    try {
-      const result = await pokemonService.editPokemon(req.params.id, req.body);
-
-      if (result) return res.status(200).json(result);
-      else return next(new NotFoundError());
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async deletePokemon(req, res, next) {
     try {
       const result = await pokemonService.deletePokemon(req.params.id);
@@ -70,6 +59,17 @@ class PokemonController {
       next(error);
     }
   }
+
+  // async editPokemon(req, res, next) {
+  //   try {
+  //     const result = await pokemonService.editPokemon(req.params.id, req.body);
+
+  //     if (result) return res.status(200).json(result);
+  //     else return next(new NotFoundError());
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
 }
 
 export default new PokemonController();

@@ -1,11 +1,18 @@
 import pokemon from '../model/pokemon';
-import pokedex from '../model/pokedex.json';
+import mongoose from 'mongoose';
+
+// import pokedex from '../model/pokedex.json';
 
 class PokemonService {
-  createPokemon(pokemonDto) {
-    const { price, date, userId } = pokemonDto;
+  async createPokemon(pokemonDto) {
+    pokemonDto._id = new mongoose.Types.ObjectId();
 
-    return pokemon.createPokemon(price, date ? date : new Date(), userId);
+    const doc = await pokemon.create(pokemonDto);
+    const _id = doc._id;
+
+    console.log('mongo-id', _id);
+
+    return _id;
   }
 
   async getPokemons() {
@@ -16,7 +23,8 @@ class PokemonService {
   }
 
   async getPokemon(id) {
-    const pokemonDB = await pokemon.find({ id: id });
+    console.log('id', id);
+    const pokemonDB = await pokemon.findById(id);
     // const pokemonDB = pokedex.find((pokemon) => pokemon.id === +id);
 
     console.log('pokemonDB', pokemonDB);
@@ -25,48 +33,48 @@ class PokemonService {
   }
 
   async getPokemonInfo(id, info) {
-    const pokemonDB = await pokemon.find({ id: id });
+    const pokemonDB = await pokemon.findById(id);
     // const pokemonDB = pokedex.find((pokemon) => pokemon.id === +id);
 
-    console.log('pokemonDB', pokemonDB[0]);
+    console.log('pokemonDB', pokemonDB);
 
-    return pokemonDB[0][info];
+    return pokemonDB[info];
+  }
+
+  async deletePokemon(id) {
+    const pokemonDB = await pokemon.deleteOne({ _id: id });
+
+    console.log('pokemonDB', pokemonDB);
+    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
+
+    return pokemonDB;
   }
 
   // ################################## OLD
 
-  async getPokemonsByUser(userId) {
-    const pokemonsDB = await pokemon.getPokemonsByUser(userId);
+  // async getPokemonsByUser(userId) {
+  //   const pokemonsDB = await pokemon.getPokemonsByUser(userId);
 
-    console.log('pokemonsDB', pokemonsDB.id);
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
+  //   console.log('pokemonsDB', pokemonsDB.id);
+  //   // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
 
-    return pokemonsDB;
-  }
+  //   return pokemonsDB;
+  // }
 
-  async editPokemon(id, pokemonDto) {
-    const { price, date, userId } = pokemonDto;
-    const pokemonDB = await pokemon.updatePokemon(
-      id,
-      price,
-      date ? date : new Date(),
-      userId
-    );
+  // async editPokemon(id, pokemonDto) {
+  //   const { price, date, userId } = pokemonDto;
+  //   const pokemonDB = await pokemon.updatePokemon(
+  //     id,
+  //     price,
+  //     date ? date : new Date(),
+  //     userId
+  //   );
 
-    console.log('pokemonDB', pokemonDB);
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
+  //   console.log('pokemonDB', pokemonDB);
+  //   // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
 
-    return pokemonDB;
-  }
-
-  async deletePokemon(id) {
-    const pokemonDB = await pokemon.deletePokemon(id);
-
-    console.log('pokemonDB', pokemonDB);
-    // pokemonDB.pokemons = await pokemon.getPokemonPokemons(pokemonDB.id);
-
-    return pokemonDB;
-  }
+  //   return pokemonDB;
+  // }
 }
 
 export default new PokemonService();

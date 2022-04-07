@@ -10,36 +10,36 @@ routesPokemon.get('/', pokemonController.getPokemons);
 
 routesPokemon.get(
   '/:id',
-  validate([param('id').isNumeric()]),
+  validate([param('id').isString()]),
   pokemonController.getPokemon
 );
 
 routesPokemon.get(
   '/:id/:info',
-  validate([param('id').isNumeric()]),
+  validate([param('id').isString()]),
   validate([param('info').exists()]),
   pokemonController.getPokemonInfo
 );
 
-// routesPokemon.post(
-//   '/',
-//   validate([body('price').isNumeric().withMessage('Price must be a number')]),
-//   pokemonController.createPokemon
-// );
+routesPokemon.delete(
+  '/:id',
+  validate([param('id').isString()]),
+  pokemonController.deletePokemon
+);
+
+routesPokemon.post(
+  '/',
+  validate([body('name').exists().withMessage('No data found')]),
+  pokemonController.createPokemon
+);
 
 // routesPokemon.put(
 //   '/:id',
 //   validate([
-//     param('id').isNumeric(),
+//     param('id').isString(),
 //     body('price').isNumeric().withMessage('Price must be a number'),
 //   ]),
 //   pokemonController.editPokemon
-// );
-
-// routesPokemon.delete(
-//   '/:id',
-//   validate([param('id').isNumeric()]),
-//   pokemonController.deletePokemon
 // );
 
 export { routesPokemon };

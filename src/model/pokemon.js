@@ -3,23 +3,37 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const pokemonSchema = new Schema({
-  id: Number,
-  name: {
-    english: String,
-    japanese: String,
-    chinese: String,
-    french: String,
-  },
-  type: [String],
-  base: {
-    HP: Number,
-    Attack: Number,
-    Defense: Number,
-    Sp: {
-      Attack: Number,
-      Defense: Number,
+  name: String,
+  type: [
+    {
+      slot: Number,
+      type: {
+        name: String,
+        url: String,
+      },
     },
-    Speed: Number,
+  ],
+  defaultPokemon: Boolean,
+  location: String,
+  description: String,
+  stats: {
+    hp: Number,
+    attack: Number,
+    defense: Number,
+    speed: Number,
+  },
+  moves: [
+    {
+      name: String,
+      description: String,
+      effectsOwner: Boolean,
+      type: Object, // todo mag String nicht
+      value: Number,
+    },
+  ],
+  gif: {
+    back: String,
+    front: String,
   },
 });
 
