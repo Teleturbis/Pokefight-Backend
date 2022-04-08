@@ -15,6 +15,7 @@
       ☐ pokemons
         ✔ add /character/:id/addPokemon/:pokemonid @done(22-04-07 23:09)
         ✔ remove /character/:id/deletePokemon/:pokemonid @done(22-04-07 23:16)
+        ☐ heal /character/:id/healPokemon/:pokemonid/:amount
       ☐ items 
         ✔ add /character/:id/addItem/:itemid @done(22-04-07 23:09)
         ✔ use /character/:id/addItem/:itemid @done(22-04-07 23:23)
@@ -24,4 +25,12 @@
   ☐ socket conn gone -> logout user? (bad with dc)
   ☐ whisper
 
-☐ jwt -> user logged state
+☐ express
+  ☐ ! routes-base !
+    ☐ middleware array 
+  ☐ jwt -> user logged state
+  ☐ ! debuggen
+
+☐ ! api routes for docs regex'en
+  ☐ in trello kärtchen die api routes auflisten
+  

@@ -40,13 +40,13 @@ routesUser.get(
 );
 
 routesUser.put(
-  '/:id/change-password',
+  '/:id/change-username',
   validate([
     param('id').isString(),
-    body('password').not().isEmpty().withMessage('Password is required'),
+    body('username').not().isEmpty().withMessage('Username is required'),
   ]),
   checkUserExists,
-  controller.changePassword
+  controller.changeUsername
 );
 
 routesUser.get(
@@ -54,6 +54,12 @@ routesUser.get(
   validate([param('id').isString()]),
   checkUserExists,
   controller.getUser
+);
+
+routesUser.get(
+  '/check-name/:name',
+  validate([param('name').isString()]),
+  controller.checkName
 );
 
 routesUser.delete(

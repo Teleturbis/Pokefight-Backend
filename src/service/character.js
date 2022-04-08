@@ -17,22 +17,10 @@ class CharacterService extends ServiceBase {
     return this.create(characterDto, character);
   }
 
-  async getCharacters() {
-    return this.getAll(character);
-  }
-
-  async getCharacter(id) {
-    return this.getById(id, character);
-  }
-
   async getCharacterByUser(userId) {
     const charDB = await character.find({ userid: userId });
     console.log('charDB', charDB);
     return charDB;
-  }
-
-  async deleteCharacter(id) {
-    return this.deleteById(id, character);
   }
 
   async addPokemon(id, pokemonId) {
@@ -70,15 +58,30 @@ class CharacterService extends ServiceBase {
     return this.getById(id, character);
   }
 
-  async addItem(id, itemId) {
-    console.log('itemId', itemId);
+  async healPokemon(id, pokemonId, amount) {
+    console.log('pokemonId', pokemonId);
+    const charDB = await this.getById(id, character);
+    const charPokemon = charDB.pokemons.find(
+      (p) => p.pokemonid.toString() === pokemonId
+    );
+
+    charPokemon.stats.hp += +amount;
+
+    await charDB.save();
+
+    // console.log('charDB', charDB);
+    return this.getById(id, character);
+  }
+
+  async addItem(id, itemId, amount = 1) {
+    console.log('amount', amount);
     const charDB = await this.getById(id, character);
     const itemDB = await item.findById(itemId);
 
-    const charItem = charDB.items.find((p) => p.itemid.toString() === itemId);
+    const charItem = charDB.items.find((i) => i.itemid.toString() === itemId);
 
     if (charItem) {
-      charItem.count += 1;
+      charItem.count += +amount;
     } else {
       charDB.items.push({
         itemid: itemId,
@@ -94,11 +97,10 @@ class CharacterService extends ServiceBase {
   }
 
   async useItem(id, itemId) {
-    console.log('itemId', itemId);
     const charDB = await this.getById(id, character);
     const itemDB = await item.findById(itemId);
 
-    const charItem = charDB.items.find((p) => p.itemid.toString() === itemId);
+    const charItem = charDB.items.find((i) => i.itemid.toString() === itemId);
 
     if (charItem && charItem.count > 0) {
       charItem.count -= 1;

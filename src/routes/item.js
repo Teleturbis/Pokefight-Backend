@@ -6,42 +6,18 @@ import validate from '../js/validate';
 import controller from '../controller/item';
 import service from '../service/item';
 import schema from '../model/item';
+import BaseRouter from './routes-base';
 
-const routesItem = express.Router();
+const baseRouter = new BaseRouter(controller, service, schema);
+const routes = baseRouter.routes;
 
-routesItem.post(
-  '/',
-  validate([body('name').exists().withMessage('No data found')]),
-  controller.create(service, schema)
-);
-
-routesItem.get('/', controller.get(service, schema));
-
-routesItem.get(
-  '/:id',
-  validate([param('id').isString()]),
-  controller.getById(service, schema)
-);
-
-routesItem.delete(
-  '/:id',
-  validate([param('id').isString()]),
-  // itemController.deleteItem
-  controller.deleteById(service, schema)
-);
-
-// routesItem.get(
-//   '/:id/:info',
-//   validate([param('id').isString()]),
-//   validate([param('info').exists()]),
-//   itemController.getItemInfo
-// );
-
-// routesItem.post(
-//   '/',
-//   validate([body('name').exists().withMessage('No data found')]),
-//   itemController.createItem
-// );
+baseRouter
+  .addPostDefault(
+    validate([body('name').exists().withMessage('body data invalid')])
+  )
+  .addGetAllDefault()
+  .addGetByIdDefault()
+  .addDeleteDefault();
 
 // routesItem.put(
 //   '/:id',
@@ -52,4 +28,4 @@ routesItem.delete(
 //   itemController.editItem
 // );
 
-export { routesItem };
+export { routes as routesItem };

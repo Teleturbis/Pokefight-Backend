@@ -6,34 +6,24 @@ import validate from '../js/validate';
 import controller from '../controller/pokemon';
 import service from '../service/pokemon';
 import schema from '../model/pokemon';
+import BaseRouter from './routes-base';
 
-const routesPokemon = express.Router();
+const baseRouter = new BaseRouter(controller, service, schema);
+const routes = baseRouter.routes;
 
-routesPokemon.post(
-  '/',
-  validate([body('name').exists().withMessage('No data found')]),
-  controller.create(service, schema)
-);
+baseRouter
+  .addPostDefault(
+    validate([body('name').exists().withMessage('body data invalid')])
+  )
+  .addGetAllDefault()
+  .addGetByIdDefault()
+  .addDeleteDefault();
 
-routesPokemon.get('/', controller.get(service, schema));
-
-routesPokemon.get(
-  '/:id',
-  validate([param('id').isString()]),
-  controller.getById(service, schema)
-);
-
-routesPokemon.get(
+routes.get(
   '/:id/:info',
   validate([param('id').isString()]),
   validate([param('info').exists()]),
   controller.getPokemonInfo
-);
-
-routesPokemon.delete(
-  '/:id',
-  validate([param('id').isString()]),
-  controller.deleteById(service, schema)
 );
 
 // routesPokemon.put(
@@ -45,4 +35,4 @@ routesPokemon.delete(
 //   pokemonController.editPokemon
 // );
 
-export { routesPokemon };
+export { routes as routesPokemon };

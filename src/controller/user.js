@@ -43,6 +43,16 @@ class UserController extends BaseController {
     }
   }
 
+  async changeUsername(req, res, next) {
+    try {
+      const result = await userService.changeUsername(req.user.id, req.body);
+
+      if (result) return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUsers(req, res, next) {
     try {
       return res.status(200).json(await userService.getUsers());
@@ -54,6 +64,15 @@ class UserController extends BaseController {
   async getUser(req, res, next) {
     try {
       return res.status(200).json(req.user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async checkName(req, res, next) {
+    try {
+      const result = await userService.checkName(req.params.name);
+      return res.status(200).json('ok');
     } catch (error) {
       next(error);
     }

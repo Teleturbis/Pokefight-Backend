@@ -4,22 +4,6 @@ import ServiceBase from './serviceBase';
 
 // import pokedex from '../model/pokedex.json';
 
-class ItemService extends ServiceBase {
-  async createItem(itemDto) {
-    return this.create(itemDto, item);
-  }
-
-  async getItems() {
-    return this.getAll(item);
-  }
-
-  async getItem(id) {
-    return this.getById(id, item);
-  }
-
-  async deleteItem(id) {
-    return this.deleteById(id, item);
-  }
-}
+class ItemService extends ServiceBase {}
 
 export default new ItemService();

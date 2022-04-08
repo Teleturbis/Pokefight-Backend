@@ -6,49 +6,48 @@ import validate from '../js/validate';
 import controller from '../controller/character';
 import service from '../service/character';
 import schema from '../model/character';
+import BaseRouter from './routes-base';
 
-const routesCharacter = express.Router();
+const baseRouter = new BaseRouter(controller, service, schema);
+const routes = baseRouter.routes;
 
-routesCharacter.post(
+baseRouter.addGetAllDefault().addGetByIdDefault().addDeleteDefault();
+
+routes.post(
   '/',
   validate([body('name').exists().withMessage('No data found')]),
   controller.createCharacter
 );
 
-routesCharacter.get('/', controller.get(service, schema));
-
-routesCharacter.get(
-  '/:id',
-  validate([param('id').isString()]),
-  controller.getById(service, schema)
-);
-
-routesCharacter.delete(
-  '/:id',
-  validate([param('id').isString()]),
-  // itemController.deleteItem
-  controller.deleteById(service, schema)
-);
-
-routesCharacter.post(
+routes.post(
   '/:id/addPokemon/:pokemonId',
   validate([param('id').isString(), param('pokemonId').isString()]),
   controller.addPokemon
 );
 
-routesCharacter.post(
+routes.post(
   '/:id/removePokemon/:pokemonId',
   validate([param('id').isString(), param('pokemonId').isString()]),
   controller.removePokemon
 );
 
-routesCharacter.post(
+routes.post(
+  '/:id/healPokemon/:pokemonId/:amount',
+  validate([
+    param('id').isString(),
+    param('pokemonId').isString(),
+    param('amount').isNumeric().withMessage('Amount must be a number'),
+  ]),
+  controller.healPokemon
+);
+
+routes.post(
   '/:id/addItem/:itemId',
   validate([param('id').isString(), param('itemId').isString()]),
   controller.addItem
 );
 
-routesCharacter.post(
+routes.post(
   '/:id/useItem/:itemId',
   validate([param('id').isString(), param('itemId').isString()]),
   controller.useItem
@@ -76,4 +75,4 @@ routesCharacter.post(
 //   itemController.editItem
 // );
 
-export { routesCharacter };
+export { routes as routesCharacter };

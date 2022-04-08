@@ -39,11 +39,26 @@ class CharacterController extends BaseController {
     }
   }
 
+  async healPokemon(req, res, next) {
+    try {
+      const result = await characterService.healPokemon(
+        req.params.id,
+        req.params.pokemonId,
+        req.params.amount
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async addItem(req, res, next) {
     try {
       const result = await characterService.addItem(
         req.params.id,
-        req.params.itemId
+        req.params.itemId,
+        req.query?.amount
       );
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());
