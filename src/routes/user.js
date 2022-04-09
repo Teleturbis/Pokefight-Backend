@@ -40,6 +40,16 @@ routesUser.get(
 );
 
 routesUser.put(
+  '/:id/change-password',
+  validate([
+    param('id').isString(),
+    body('password').not().isEmpty().withMessage('Password is required'),
+  ]),
+  checkUserExists,
+  controller.changePassword
+);
+
+routesUser.put(
   '/:id/change-username',
   validate([
     param('id').isString(),

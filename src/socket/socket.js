@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import userService from '../service/user';
 
 export default class PokeSocketServer {
   constructor(server) {
@@ -12,14 +13,54 @@ export default class PokeSocketServer {
 
     this.interval = this.initActionTics();
 
+    this.io.use((socket, next) => {
+      if (socket.handshake.auth.userId) {
+        socket.userId = socket.handshake.auth.userId;
+        next();
+      } else {
+        next();
+        // next(new Error('Authentication error')); // todo
+      }
+      // console.log('socket.handshake.query', socket.handshake.query);
+    });
+
     this.io.on('connection', (socket) => {
-      console.log('a user connected', socket.id);
+      console.log(
+        `user connected >> socket: ${socket.id} - userId: ${socket.userId}`
+      );
+
+      // set user in db online
+      userService
+        .setOnOffline(socket.userId, true)
+        .then()
+        .catch((error) => null /*console.log(error)*/);
+
+      socket.join(socket.userId); // fuer whispers
+
+      // emit all that new user online -> they should tell YOU their position to update the map with all online users
+      socket.broadcast.emit('connect-received', socket.id);
+
       socket.on('disconnect', () => {
-        console.log('user disconnected', socket.id);
+        console.log(
+          `user disconnected >> socket: ${socket.id} - userId: ${socket.userId}`
+        );
+
+        // for friendslist and game -> emit disconnect
+        this.io.emit('disconnect-received', socket.id);
+
+        // set user in db offline
+        if (socket.userId) {
+          userService
+            .setOnOffline(socket.userId, false)
+            .then()
+            .catch((error) => null /*console.log(error)*/);
+        }
       });
 
       socket.on('msg-event', (msg, room) => {
-        console.log('room', room);
+        if (room) console.log('room', room);
+
+        console.log('userId', socket.userId);
         // this.io.volatile.emit('msg-received', msg); // volatile >> ignores disconnects, normal emit sends all stacked msgs while disconnected
         if (!room) this.io.emit('msg-received', msg);
         else this.io.to(room).emit('msg-received', msg);
@@ -30,8 +71,11 @@ export default class PokeSocketServer {
         // this.io.volatile.emit('action-received', action); // volatile >> ignores disconnects, normal emit sends all stacked actions while disconnected
         this.countActions++;
         this.actionQueue.push(action);
-        // if (!room) this.io.emit('action-received', action);
-        // else this.io.to(room).emit('action-received', action);
+      });
+
+      socket.on('battle-event', (move, room) => {
+        console.log('to socket-id', room);
+        if (room) this.io.to(room).emit('battle-received', move);
       });
 
       socket.on('join-room', (room, cb) => {

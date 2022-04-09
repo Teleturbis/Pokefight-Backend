@@ -36,4 +36,32 @@ export default class ServiceBase {
 
     return result;
   }
+
+  async editDocumentById(id, schema, cbEditDocument) {
+    const doc = await schema.findById(id);
+    return await this.editDocument(doc, cbEditDocument);
+  }
+
+  async editDocumentByCondition(condition, schema, cbEditDocument) {
+    const [doc] = await schema.find(condition);
+    return await this.editDocument(doc, cbEditDocument);
+  }
+
+  async editDocument(doc, cbEditDocument) {
+    console.log('doc', doc);
+    // const itemDB = pokedex.find((item) => item.id === +id);
+
+    const cbResult = await cbEditDocument(doc);
+    console.log('cbResult', cbResult);
+
+    const result = await doc.save();
+
+    if (!result) {
+      throw new Error('Error edit document');
+    }
+
+    console.log('result', result);
+
+    return result;
+  }
 }

@@ -39,9 +39,9 @@ class CharacterController extends BaseController {
     }
   }
 
-  async healPokemon(req, res, next) {
+  async changeHpPokemon(req, res, next) {
     try {
-      const result = await characterService.healPokemon(
+      const result = await characterService.changeHpPokemon(
         req.params.id,
         req.params.pokemonId,
         req.params.amount

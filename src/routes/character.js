@@ -32,13 +32,13 @@ routes.post(
 );
 
 routes.post(
-  '/:id/healPokemon/:pokemonId/:amount',
+  '/:id/changeHpPokemon/:pokemonId/:amount',
   validate([
     param('id').isString(),
     param('pokemonId').isString(),
     param('amount').isNumeric().withMessage('Amount must be a number'),
   ]),
-  controller.healPokemon
+  controller.changeHpPokemon
 );
 
 routes.post(
