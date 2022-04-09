@@ -10,7 +10,7 @@ class BaseRouter {
     this.schema = schema;
   }
 
-  addPostDefault(validations = () => next()) {
+  addCreateDefault(validations = () => next()) {
     this.routes.post(
       '/',
       validations,

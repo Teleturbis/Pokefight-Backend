@@ -12,7 +12,7 @@ const baseRouter = new BaseRouter(controller, service, schema);
 const routes = baseRouter.routes;
 
 baseRouter
-  .addPostDefault(
+  .addCreateDefault(
     validate([body('name').exists().withMessage('body data invalid')])
   )
   .addGetAllDefault()
