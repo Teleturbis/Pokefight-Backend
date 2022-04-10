@@ -18,6 +18,13 @@ class UserService extends ServiceBase {
     return id;
   }
 
+  async checkData(req) {
+    // return await this.checkName(req.body.name, req.params.id);
+    await this.checkName(req.body.username, req.params.id);
+    await this.checkMail(req.body.email, req.params.id);
+    return true;
+  }
+
   async loginUser(userDto) {
     const { type, password } = userDto;
 
@@ -87,8 +94,8 @@ class UserService extends ServiceBase {
     return result;
   }
 
-  async checkName(name) {
-    const result = await userSchema.find({ username: name });
+  async checkName(name, id) {
+    const result = await userSchema.find({ username: name, _id: { $ne: id } });
     if (result.length > 0) {
       throw new BadRequestError('Username already exists');
     }
@@ -96,8 +103,8 @@ class UserService extends ServiceBase {
     return result;
   }
 
-  async checkMail(mail) {
-    const result = await userSchema.find({ email: mail });
+  async checkMail(mail, id) {
+    const result = await userSchema.find({ email: mail, _id: { $ne: id } });
     if (result.length > 0) {
       throw new BadRequestError('Email already exists');
     }

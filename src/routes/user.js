@@ -19,7 +19,11 @@ const bodyValidations = [
   body('password').not().isEmpty().withMessage('Password is required'),
 ];
 
-baseRouter.addEditDefault(validate(bodyValidations));
+// ! bind(service) to the callback-Function, otherwise big problems with the this-reference
+baseRouter.addEditDefault(
+  validate(bodyValidations),
+  service.checkData.bind(service)
+);
 
 routes.get('/', controller.getUsers);
 routes.post('/', validate(bodyValidations), controller.createUser);
