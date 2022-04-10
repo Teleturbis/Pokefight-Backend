@@ -15,17 +15,17 @@
       ☐ pokemons
         ✔ add /character/:id/addPokemon/:pokemonid @done(22-04-07 23:09)
         ✔ remove /character/:id/deletePokemon/:pokemonid @done(22-04-07 23:16)
-        ☐ heal /character/:id/changeHpPokemon/:pokemonid/:amount
+        ✔ heal /character/:id/changeHpPokemon/:pokemonid/:amount @done(22-04-10 00:15)
       ☐ items 
         ✔ add /character/:id/addItem/:itemid @done(22-04-07 23:09)
         ✔ use /character/:id/addItem/:itemid @done(22-04-07 23:23)
 
 ☐ socket
-  ☐ middleware -> user-id?
+  ✔ middleware -> user-id? @done(22-04-10 00:14)
   ☐ socket conn gone -> logout user? (bad with dc) >>> better emit to all clients (friends list, disappear on map)
   ☐ whisper
-  ☐ tics -> to all players, even the one that triggered the action (userID in every action?)
-  ☐ friend goes online -> emit to all friends
+  ☐ tics -> goes to all players, even the one that triggered the action (userID in every action?)
+  ☐ friend goes online -> emit to all friends (green light)
 
 ☐ express
   ✔ ! routes-base ! @done(22-04-08 12:04)

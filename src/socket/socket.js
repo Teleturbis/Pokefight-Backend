@@ -16,10 +16,11 @@ export default class PokeSocketServer {
     this.io.use((socket, next) => {
       if (socket.handshake.auth.userId) {
         socket.userId = socket.handshake.auth.userId;
+        socket.username = socket.handshake.auth.username;
         next();
       } else {
-        next();
-        // next(new Error('Authentication error')); // todo
+        // next();
+        next(new Error('Authentication error')); // todo
       }
       // console.log('socket.handshake.query', socket.handshake.query);
     });
@@ -59,11 +60,22 @@ export default class PokeSocketServer {
 
       socket.on('msg-event', (msg, room) => {
         if (room) console.log('room', room);
-
         console.log('userId', socket.userId);
+
+        const createMsg = (msg) => {
+          return {
+            msg: msg,
+            user: {
+              id: socket.userId,
+              name: socket.username,
+              socket: socket.id,
+            },
+          };
+        };
+
         // this.io.volatile.emit('msg-received', msg); // volatile >> ignores disconnects, normal emit sends all stacked msgs while disconnected
-        if (!room) this.io.emit('msg-received', msg);
-        else this.io.to(room).emit('msg-received', msg);
+        if (!room) this.io.emit('msg-received', createMsg(msg));
+        else this.io.to(room).emit('msg-received', createMsg(msg));
       });
 
       socket.on('action-event', (action, room) => {
@@ -76,6 +88,23 @@ export default class PokeSocketServer {
       socket.on('battle-event', (move, room) => {
         console.log('to socket-id', room);
         if (room) this.io.to(room).emit('battle-received', move);
+      });
+
+      socket.on('friend-request-event', async (fromUser, toUser) => {
+        // console.log(
+        //   `user friend-request >> to socket: ${room} - user: ${user}`
+        // );
+        // console.log(`user >> socket: ${socket.id} - userId: ${socket.userId}`);
+
+        const toSocket = await this.getSocketofUser(toUser.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('friend-request-received', {
+            name: fromUser.name,
+            id: fromUser.id,
+          });
+
+        // todo save friend request in db (pending)
       });
 
       socket.on('join-room', (room, cb) => {
@@ -94,6 +123,11 @@ export default class PokeSocketServer {
         }
       });
     });
+  }
+
+  async getSocketofUser(userId) {
+    const sockets = await this.io.fetchSockets();
+    return sockets.find((socket) => socket.userId === userId)?.id;
   }
 
   setTicInterval(time) {

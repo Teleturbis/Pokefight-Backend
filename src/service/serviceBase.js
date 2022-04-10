@@ -23,7 +23,7 @@ export default class ServiceBase {
     const ds = await schema.findById(id);
     // const itemDB = pokedex.find((item) => item.id === +id);
 
-    console.log('ds', ds);
+    // console.log('ds', ds);
 
     return ds;
   }
@@ -48,11 +48,11 @@ export default class ServiceBase {
   }
 
   async editDocument(doc, cbEditDocument) {
-    console.log('doc', doc);
+    // console.log('doc', doc);
     // const itemDB = pokedex.find((item) => item.id === +id);
 
     const cbResult = await cbEditDocument(doc);
-    console.log('cbResult', cbResult);
+    if (cbResult) console.log('cbResult', cbResult);
 
     const result = await doc.save();
 
@@ -60,7 +60,7 @@ export default class ServiceBase {
       throw new Error('Error edit document');
     }
 
-    console.log('result', result);
+    // console.log('result', result);
 
     return result;
   }
