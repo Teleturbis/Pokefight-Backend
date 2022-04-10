@@ -8,21 +8,23 @@ import checkUserExists from '../middleware/checkUserExists';
 import controller from '../controller/user';
 import service from '../service/user';
 import schema from '../model/user';
+import BaseRouter from './routes-base';
 
-const routesUser = express.Router();
+const baseRouter = new BaseRouter(controller, service, schema);
+const routes = baseRouter.routes;
 
-routesUser.get('/', controller.getUsers);
-routesUser.post(
-  '/',
-  validate([
-    body('username').not().isEmpty().withMessage('User Name is required'),
-    body('email').not().isEmpty().withMessage('Email is required'),
-    body('password').not().isEmpty().withMessage('Password is required'),
-  ]),
-  controller.createUser
-);
+const bodyValidations = [
+  body('username').not().isEmpty().withMessage('User Name is required'),
+  body('email').not().isEmpty().withMessage('Email is required'),
+  body('password').not().isEmpty().withMessage('Password is required'),
+];
 
-routesUser.post(
+baseRouter.addEditDefault(validate(bodyValidations));
+
+routes.get('/', controller.getUsers);
+routes.post('/', validate(bodyValidations), controller.createUser);
+
+routes.post(
   '/login',
   validate([
     body('user').not().isEmpty().withMessage('User Name is required'),
@@ -32,14 +34,14 @@ routesUser.post(
   controller.loginUser
 );
 
-routesUser.get(
+routes.get(
   '/:id/logout',
   validate([param('id').isString()]),
   checkUserExists,
   controller.logoutUser
 );
 
-routesUser.put(
+routes.put(
   '/:id/change-password',
   validate([
     param('id').isString(),
@@ -49,7 +51,7 @@ routesUser.put(
   controller.changePassword
 );
 
-routesUser.put(
+routes.put(
   '/:id/change-username',
   validate([
     param('id').isString(),
@@ -59,27 +61,27 @@ routesUser.put(
   controller.changeUsername
 );
 
-routesUser.get(
+routes.get(
   '/:id',
   validate([param('id').isString()]),
   checkUserExists,
   controller.getUser
 );
 
-routesUser.get(
+routes.get(
   '/check-name/:name',
   validate([param('name').isString()]),
   controller.checkName
 );
 
-routesUser.delete(
+routes.delete(
   '/:id',
   validate([param('id').isString()]),
   checkUserExists,
   controller.deleteUser
 );
 
-routesUser.get(
+routes.get(
   '/:id/character',
   validate([param('id').isString()]),
   controller.getUserCharacter
@@ -113,4 +115,4 @@ routesUser.get(
 
 // can be reused by many routes
 
-export { routesUser };
+export { routes as routesUser };

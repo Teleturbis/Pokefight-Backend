@@ -11,7 +11,13 @@ import BaseRouter from './routes-base';
 const baseRouter = new BaseRouter(controller, service, schema);
 const routes = baseRouter.routes;
 
-baseRouter.addGetAllDefault().addGetByIdDefault().addDeleteDefault();
+baseRouter
+  .addGetAllDefault()
+  .addGetByIdDefault()
+  .addEditDefault(
+    validate([body('name').exists().withMessage('body data invalid')])
+  )
+  .addDeleteDefault();
 
 routes.post(
   '/',

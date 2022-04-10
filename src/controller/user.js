@@ -2,6 +2,7 @@ import { BadRequestError, NotFoundError } from '../js/httpError';
 import BaseController from './controllerBase';
 import userService from '../service/user';
 import characterService from '../service/character';
+import userSchema from '../model/user';
 
 class UserController extends BaseController {
   async createUser(req, res, next) {
@@ -55,7 +56,7 @@ class UserController extends BaseController {
 
   async getUsers(req, res, next) {
     try {
-      return res.status(200).json(await userService.getUsers());
+      return res.status(200).json(await userService.getAll(userSchema, req));
     } catch (error) {
       next(error);
     }

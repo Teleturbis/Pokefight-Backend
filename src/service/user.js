@@ -105,10 +105,6 @@ class UserService extends ServiceBase {
     return result;
   }
 
-  async getUsers() {
-    return await this.getAll(userSchema);
-  }
-
   async getUser(id) {
     return await this.getById(id, userSchema);
   }

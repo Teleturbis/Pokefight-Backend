@@ -12,8 +12,9 @@ export default class ServiceBase {
     return _id;
   }
 
-  async getAll(schema) {
-    const collection = await schema.find({});
+  async getAll(schema, req) {
+    console.log('req', req?.query);
+    const collection = await schema.find(req?.query);
     // const itemsDB = pokedex;
 
     return collection;
@@ -39,22 +40,23 @@ export default class ServiceBase {
 
   async editDocumentById(id, schema, cbEditDocument) {
     const doc = await schema.findById(id);
-    return await this.editDocument(doc, cbEditDocument);
+    return await this.editDocument(doc, schema, cbEditDocument);
   }
 
   async editDocumentByCondition(condition, schema, cbEditDocument) {
     const [doc] = await schema.find(condition);
-    return await this.editDocument(doc, cbEditDocument);
+    return await this.editDocument(doc, schema, cbEditDocument);
   }
 
-  async editDocument(doc, cbEditDocument) {
+  async editDocument(doc, schema, cbEditDocument) {
     // console.log('doc', doc);
     // const itemDB = pokedex.find((item) => item.id === +id);
 
-    const cbResult = await cbEditDocument(doc);
-    if (cbResult) console.log('cbResult', cbResult);
+    const docEdited = await cbEditDocument(doc);
+    if (docEdited) console.log('docEdited', docEdited);
 
-    const result = await doc.save();
+    // const result = await doc.save();
+    const result = await schema.updateOne({ _id: doc._id }, docEdited);
 
     if (!result) {
       throw new Error('Error edit document');

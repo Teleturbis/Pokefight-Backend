@@ -1,4 +1,4 @@
-import { NotFoundError } from '../js/httpError';
+import { BadRequestError, NotFoundError } from '../js/httpError';
 import itemService from '../service/item';
 
 class BaseController {
@@ -19,7 +19,7 @@ class BaseController {
     return async (req, res, next) => {
       try {
         // console.log('cb', cb);
-        const result = await service.getAll(schema);
+        const result = await service.getAll(schema, req);
 
         if (result) return res.status(200).json(result);
         else return next(new NotFoundError());
@@ -34,6 +34,36 @@ class BaseController {
       try {
         // console.log('cb', cb);
         const result = await service.getById(req.params.id, schema);
+
+        if (result) return res.status(200).json(result);
+        else return next(new NotFoundError());
+      } catch (error) {
+        next(error);
+      }
+    };
+  };
+
+  editById = (service, schema, cbCheckData) => {
+    return async (req, res, next) => {
+      try {
+        // console.log('cb', cb);
+
+        // compare param-id with body-id
+        if (req.body._id && req.params.id !== req.body._id) {
+          throw new BadRequestError('Ids do not match');
+        }
+
+        const checkData = await cbCheckData(req);
+        if (!cbCheckData) throw new Error('Error checkData');
+
+        // ! save document in DB unfiltered (-> replace)
+        const result = await service.editDocumentById(
+          req.params.id,
+          schema,
+          async (doc) => {
+            return req.body;
+          }
+        );
 
         if (result) return res.status(200).json(result);
         else return next(new NotFoundError());

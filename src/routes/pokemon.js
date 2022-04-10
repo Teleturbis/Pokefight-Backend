@@ -17,6 +17,9 @@ baseRouter
   )
   .addGetAllDefault()
   .addGetByIdDefault()
+  .addEditDefault(
+    validate([body('name').exists().withMessage('body data invalid')])
+  )
   .addDeleteDefault();
 
 routes.get(

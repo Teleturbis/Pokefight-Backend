@@ -11,13 +11,16 @@ import BaseRouter from './routes-base';
 const baseRouter = new BaseRouter(controller, service, schema);
 const routes = baseRouter.routes;
 
+const validateBody = validate([
+  body('name').exists().withMessage('body data invalid'),
+]);
 baseRouter
-  .addCreateDefault(
-    validate([body('name').exists().withMessage('body data invalid')])
-  )
   .addGetAllDefault()
   .addGetByIdDefault()
+  .addEditDefault(validateBody, service.checkData)
   .addDeleteDefault();
+
+routes.post('/', validateBody, controller.createItem);
 
 // routesItem.put(
 //   '/:id',

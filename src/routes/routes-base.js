@@ -33,6 +33,16 @@ class BaseRouter {
     return this;
   }
 
+  addEditDefault(validations = () => next(), cbCheckData = () => true) {
+    this.routes.put(
+      '/:id',
+      validate([param('id').isString()]),
+      validations,
+      this.controller.editById(this.service, this.schema, cbCheckData)
+    );
+    return this;
+  }
+
   addDeleteDefault() {
     this.routes.delete(
       '/:id',
