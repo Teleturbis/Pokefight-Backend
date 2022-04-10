@@ -14,13 +14,15 @@ const routes = baseRouter.routes;
 const validateBody = validate([
   body('name').exists().withMessage('body data invalid'),
 ]);
+// ! bind(service) to the callback-Function, otherwise big problems with the this-reference
 baseRouter
+  .addCreateDefault(validateBody, service.checkData.bind(service))
   .addGetAllDefault()
   .addGetByIdDefault()
-  .addEditDefault(validateBody, service.checkData)
+  .addEditDefault(validateBody, service.checkData.bind(service))
   .addDeleteDefault();
 
-routes.post('/', validateBody, controller.createItem);
+// routes.post('/', validateBody, controller.createItem);
 
 // routesItem.put(
 //   '/:id',

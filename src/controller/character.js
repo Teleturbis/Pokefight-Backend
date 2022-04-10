@@ -3,16 +3,6 @@ import characterService from '../service/character';
 import BaseController from './controllerBase';
 
 class CharacterController extends BaseController {
-  async createCharacter(req, res, next) {
-    try {
-      const id = await characterService.createCharacter(req.body);
-      if (!id) throw new Error('Error createCharacter');
-      return res.status(200).json({ id: id });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async addPokemon(req, res, next) {
     try {
       const result = await characterService.addPokemon(

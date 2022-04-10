@@ -3,18 +3,36 @@ import ServiceBase from './serviceBase';
 import { BadRequestError } from '../js/httpError';
 // models
 import characterSchema from '../model/character';
-import pokemon from '../model/pokemon';
-import item from '../model/item';
+import pokemonSchema from '../model/pokemon';
+import itemSchema from '../model/item';
 
 // import pokedex from '../model/pokedex.json';
 
 class CharacterService extends ServiceBase {
-  async createCharacter(characterDto) {
-    const charDB = await this.getCharacterByUser(characterDto.userid);
+  async checkData(req) {
+    await this.checkCharacter(req.body.userid);
+    await this.checkName(req.body.name, req.params.id);
+    // const charDB = await this.getCharacterByUser(characterDto.userid);
+    // if (charDB && charDB.length > 0) {
+    //   throw new BadRequestError('User already has a character');
+    // }
+    return true;
+  }
+
+  async checkCharacter(userId) {
+    const charDB = await this.getCharacterByUser(userId);
     if (charDB && charDB.length > 0) {
       throw new BadRequestError('User already has a character');
     }
-    return this.create(characterDto, characterSchema);
+    return true;
+  }
+
+  async checkName(name, id) {
+    const result = await characterSchema.find({ name: name, _id: { $ne: id } });
+    if (result.length > 0) {
+      throw new BadRequestError('Character Name already exists');
+    }
+    return result;
   }
 
   async getCharacterByUser(userId) {
@@ -30,7 +48,7 @@ class CharacterService extends ServiceBase {
       id,
       characterSchema,
       async (docChar) => {
-        const docPokemon = await pokemon.findById(pokemonId);
+        const docPokemon = await pokemonSchema.findById(pokemonId);
 
         if (
           docChar.pokemons.some((p) => p.pokemonid.toString() === pokemonId)
@@ -93,7 +111,7 @@ class CharacterService extends ServiceBase {
       id,
       characterSchema,
       async (docChar) => {
-        const docItem = await item.findById(itemId);
+        const docItem = await itemSchema.findById(itemId);
 
         const charItem = docChar.items.find(
           (i) => i.itemid.toString() === itemId

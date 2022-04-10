@@ -11,19 +11,17 @@ import BaseRouter from './routes-base';
 const baseRouter = new BaseRouter(controller, service, schema);
 const routes = baseRouter.routes;
 
+const validateBody = validate([
+  body('name').exists().withMessage('body data invalid'),
+]);
+
+// ! bind(service) to the callback-Function, otherwise big problems with the this-reference
 baseRouter
+  .addCreateDefault(validateBody, service.checkData.bind(service))
   .addGetAllDefault()
   .addGetByIdDefault()
-  .addEditDefault(
-    validate([body('name').exists().withMessage('body data invalid')])
-  )
+  .addEditDefault(validateBody, service.checkData.bind(service))
   .addDeleteDefault();
-
-routes.post(
-  '/',
-  validate([body('name').exists().withMessage('No data found')]),
-  controller.createCharacter
-);
 
 routes.post(
   '/:id/addPokemon/:pokemonId',

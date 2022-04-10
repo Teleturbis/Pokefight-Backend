@@ -2,9 +2,12 @@ import { BadRequestError, NotFoundError } from '../js/httpError';
 import itemService from '../service/item';
 
 class BaseController {
-  create = (service, schema) => {
+  create = (service, schema, cbCheckData) => {
     return async (req, res, next) => {
       try {
+        const checkData = await cbCheckData(req);
+        if (!checkData) throw new Error('Error checkData');
+
         const id = await service.create(req.body, schema);
         if (!id) throw new Error('Error create');
 
@@ -54,7 +57,7 @@ class BaseController {
         }
 
         const checkData = await cbCheckData(req);
-        if (!cbCheckData) throw new Error('Error checkData');
+        if (!checkData) throw new Error('Error checkData');
 
         // ! save document in DB unfiltered (-> replace)
         const result = await service.editDocumentById(

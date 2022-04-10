@@ -10,11 +10,11 @@ class BaseRouter {
     this.schema = schema;
   }
 
-  addCreateDefault(validations = () => next()) {
+  addCreateDefault(validations = () => next(), cbCheckData = () => true) {
     this.routes.post(
       '/',
       validations,
-      this.controller.create(this.service, this.schema)
+      this.controller.create(this.service, this.schema, cbCheckData)
     );
     return this;
   }
