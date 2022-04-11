@@ -10,6 +10,33 @@ import { charPokemons } from '../model/views';
 // import pokedex from '../model/pokedex.json';
 
 class CharacterService extends ServiceBase {
+  async createCharacter(req) {
+    await this.checkData(req);
+
+    const id = this.create(req.body, userSchema);
+
+    // todo add 5 random pokemons
+    const pokemons = await pokemonSchema.find({});
+
+    const random = () => Math.floor(Math.random() * 380);
+
+    try {
+      // todo async loop
+      // [...Array(5).keys()].forEach(() => {
+      //   await this.addPokemon(id, random());
+      // });
+      await this.addPokemon(id, random());
+      await this.addPokemon(id, random());
+      await this.addPokemon(id, random());
+      await this.addPokemon(id, random());
+      await this.addPokemon(id, random());
+    } catch (error) {
+      console.log('error', error);
+    }
+
+    return id;
+  }
+
   async checkData(req) {
     await this.checkCharacter(req.body.userid);
     await this.checkName(req.body.name, req.params.id);

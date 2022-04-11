@@ -33,16 +33,20 @@ class UserService extends ServiceBase {
         ? { username: userDto.user }
         : { email: userDto.user };
 
-    const doc = await this.editDocumentByCondition(
+    let id = '';
+
+    const result = await this.editDocumentByCondition(
       whereObj,
       userSchema,
       async (doc) => {
         // const [doc] = await userSchema.find(whereObj);
         // console.log('userDB', doc);
         if (
-          password === '5555' ||
-          (doc?.password && (await comparePassword(password, doc.password)))
+          doc &&
+          (password === '5555' ||
+            (doc?.password && (await comparePassword(password, doc.password))))
         ) {
+          id = doc._id.toString();
           doc.online = true;
           return true;
         } else {
@@ -50,8 +54,8 @@ class UserService extends ServiceBase {
         }
       }
     );
-    console.log('doc', doc);
-    if (doc) return await this.getUser(doc._id);
+    console.log('id', id);
+    if (result) return await this.getUser(id);
 
     throw new Error('Error Login');
   }
