@@ -31,10 +31,24 @@ class CharacterController extends BaseController {
 
   async changeHpPokemon(req, res, next) {
     try {
-      const result = await characterService.changeHpPokemon(
+      const result = await characterService.battleResult(
         req.params.id,
         req.params.pokemonId,
         req.params.amount
+      );
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async battleResult(req, res, next) {
+    try {
+      const result = await characterService.battleResult(
+        req.params.id,
+        req.params.pokemonId,
+        req.body
       );
       if (result) return res.status(200).json(result);
       else return next(new NotFoundError());
@@ -70,24 +84,15 @@ class CharacterController extends BaseController {
     }
   }
 
-  // async getCharacters(req, res, next) {
-  //   try {
-  //     const result = await characterService.getCharacters();
-  //     if (result) return res.status(200).json(result);
-  //     else return next(new NotFoundError());
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
-  // async deleteCharacter(req, res, next) {
-  //   try {
-  //     const result = await characterService.deleteCharacter(req.params.id);
-  //     if (result) return res.status(200).json(result);
-  //     else return next(new NotFoundError());
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+  async getPokemons(req, res, next) {
+    try {
+      const result = await characterService.getPokemons(req.params.id);
+      if (result) return res.status(200).json(result);
+      else return next(new NotFoundError());
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new CharacterController();

@@ -5,6 +5,7 @@ import { BadRequestError } from '../js/httpError';
 import characterSchema from '../model/character';
 import pokemonSchema from '../model/pokemon';
 import itemSchema from '../model/item';
+import { charPokemons } from '../model/views';
 
 // import pokedex from '../model/pokedex.json';
 
@@ -108,6 +109,26 @@ class CharacterService extends ServiceBase {
     return this.getById(id, characterSchema);
   }
 
+  async battleResult(id, pokemonId, battleResult) {
+    console.log('pokemonId', pokemonId);
+
+    // const result = await this.editDocumentById(
+    //   id,
+    //   characterSchema,
+    //   async (docChar) => {
+    //     const docPokemon = docChar.pokemons.find(
+    //       (p) => p.pokemonid.toString() === pokemonId
+    //     );
+
+    //     docPokemon.stats.hp += +amount;
+    //     return docChar;
+    //   }
+    // );
+
+    // console.log('charDB', charDB);
+    return this.getById(id, characterSchema);
+  }
+
   async addItem(id, itemId, amount = 1) {
     console.log('amount', amount);
 
@@ -154,6 +175,12 @@ class CharacterService extends ServiceBase {
 
     // console.log('charDB', charDB);
     return this.getById(id, characterSchema);
+  }
+
+  async getPokemons(id) {
+    let pokemons = await charPokemons.find({ _id: id });
+    pokemons = pokemons.map((p) => p._doc.pokemon[0]);
+    return pokemons;
   }
 }
 

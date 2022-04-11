@@ -46,6 +46,12 @@ routes.post(
 );
 
 routes.post(
+  '/:id/battle-result/:pokemonId/',
+  validate([param('id').isString(), param('pokemonId').isString()]),
+  controller.battleResult
+);
+
+routes.post(
   '/:id/addItem/:itemId',
   validate([param('id').isString(), param('itemId').isString()]),
   controller.addItem
@@ -57,26 +63,10 @@ routes.post(
   controller.useItem
 );
 
-// routesItem.get(
-//   '/:id/:info',
-//   validate([param('id').isString()]),
-//   validate([param('info').exists()]),
-//   itemController.getItemInfo
-// );
-
-// routesItem.post(
-//   '/',
-//   validate([body('name').exists().withMessage('No data found')]),
-//   itemController.createItem
-// );
-
-// routesItem.put(
-//   '/:id',
-//   validate([
-//     param('id').isString(),
-//     body('price').isNumeric().withMessage('Price must be a number'),
-//   ]),
-//   itemController.editItem
-// );
+routes.get(
+  '/:id/getPokemons',
+  validate([param('id').isString()]),
+  controller.getPokemons
+);
 
 export { routes as routesCharacter };

@@ -5,6 +5,7 @@
       ☐ add {userid: _id, name: name, avatar: avatar}
     ☐ remove
     ☐ whisper
+    ☐ if friend -> no request 
     
   ☐ ignorelist
     ☐ add {userid: _id, name: name, avatar: avatar}
