@@ -1,9 +1,11 @@
 ☐ user
   ✔ changepw @done(22-04-07 17:09)
   ☐ friendslist
-    ☐ add {userid: _id, name: name, avatar: avatar}
+    ☐ friendrequest
+      ☐ add {userid: _id, name: name, avatar: avatar}
     ☐ remove
     ☐ whisper
+    
   ☐ ignorelist
     ☐ add {userid: _id, name: name, avatar: avatar}
     ☐ unignore

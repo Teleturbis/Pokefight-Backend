@@ -91,11 +91,6 @@ export default class PokeSocketServer {
       });
 
       socket.on('friend-request-event', async (fromUser, toUser) => {
-        // console.log(
-        //   `user friend-request >> to socket: ${room} - user: ${user}`
-        // );
-        // console.log(`user >> socket: ${socket.id} - userId: ${socket.userId}`);
-
         const toSocket = await this.getSocketofUser(toUser.id);
 
         if (toSocket)
@@ -105,6 +100,42 @@ export default class PokeSocketServer {
           });
 
         // todo save friend request in db (pending)
+        userService
+          .friendRequest(fromUser.id, toUser.id)
+          .then()
+          .catch((error) => null /*console.log(error)*/);
+      });
+
+      socket.on('friend-accept-event', async (user, friend) => {
+        const toSocket = await this.getSocketofUser(friend.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('friend-accept-received', {
+            name: user.name,
+            id: user.id,
+          });
+
+        // todo save friend relationship in both users
+        userService
+          .friendAccepted(user.id, friend.id)
+          .then()
+          .catch((error) => null /*console.log(error)*/);
+      });
+
+      socket.on('friend-reject-event', async (user, friend) => {
+        const toSocket = await this.getSocketofUser(friend.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('friend-reject-received', {
+            name: user.name,
+            id: user.id,
+          });
+
+        // todo save friend relationship in both users
+        userService
+          .friendRejected(user.id, friend.id)
+          .then()
+          .catch((error) => null /*console.log(error)*/);
       });
 
       socket.on('join-room', (room, cb) => {

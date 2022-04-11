@@ -65,6 +65,13 @@ routes.put(
   controller.changeUsername
 );
 
+routes.put(
+  '/:id/friend-request/:friendId',
+  validate([param('id').isString(), param('userId').isString()]),
+  checkUserExists,
+  controller.friendRequest
+);
+
 routes.get(
   '/:id',
   validate([param('id').isString()]),

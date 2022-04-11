@@ -10,16 +10,9 @@ use('pokefight');
 // Make sure you run it against the correct database and collection.
 // db.pokemons.find({ date: { $gte: new Date('2014-04-04'), $lt: new Date('2014-04-05') } });
 // db.pokemons.find({id : 10});
-db.users.find({});
+// db.users.find({});
 // db.users.find({_id: '624b6c0ac5dcd8dc4a577532'});
 
-// Build an aggregation to view total sales for each product in 2014.
-// const aggregation = [
-//   { $match: { date: { $gte: new Date('2014-01-01'), $lt: new Date('2015-01-01') } } },
-//   { $group: { _id: '$item', totalSaleAmount: { $sum: { $multiply: [ '$price', '$quantity' ] } } } }
-// ];
+// db-view
+db.charitems.find({name: 'CrazyMelon'}, {_id: 0, items:1, item: 1});
 
-// // Run the aggregation and open a cursor to the results.
-// // Use toArray() to exhaust the cursor to return the whole result set.
-// // You can use hasNext()/next() to iterate through the cursor page by page.
-// db.sales.aggregate(aggregation);

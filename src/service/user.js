@@ -59,6 +59,7 @@ class UserService extends ServiceBase {
   async logoutUser(id) {
     const result = await this.editDocumentById(id, userSchema, async (doc) => {
       doc.online = false;
+      return doc;
     });
 
     return await this.getUser(id);
@@ -69,6 +70,7 @@ class UserService extends ServiceBase {
   async setOnOffline(id, isOn = true) {
     const result = await this.editDocumentById(id, userSchema, async (doc) => {
       doc.online = isOn;
+      return doc;
     });
 
     return result;
@@ -78,6 +80,7 @@ class UserService extends ServiceBase {
     const { password } = userDto;
     const result = await this.editDocumentById(id, userSchema, async (doc) => {
       doc.password = await generatePassword(password);
+      return doc;
     });
 
     return result;
@@ -89,6 +92,98 @@ class UserService extends ServiceBase {
       if (doc.username === username) return;
       await this.checkName(username);
       doc.username = username;
+      return doc;
+    });
+
+    return result;
+  }
+
+  async friendRequest(from, to) {
+    const result = await this.editDocumentById(to, userSchema, async (doc) => {
+      if (!doc.friends.some((friend) => friend.userid.toString() === from)) {
+        doc.friends.push({
+          userid: from,
+          status: 'pending',
+          date: new Date(),
+        });
+      }
+
+      return doc;
+    });
+
+    return result;
+  }
+
+  async friendAccepted(userId, friendId) {
+    //user
+    await this.editDocumentById(userId, userSchema, async (doc) => {
+      const friend = doc.friends.find(
+        (friend) => friend.userid.toString() === friendId
+      );
+      if (friend.status === 'pending') {
+        friend.status = 'accepted';
+        friend.date = new Date();
+      }
+      return doc;
+    });
+
+    //friend
+    const result = await this.editDocumentById(
+      friendId,
+      userSchema,
+      async (doc) => {
+        if (
+          !doc.friends.some((friend) => friend?.userid?.toString() === userId)
+        ) {
+          doc.friends.push({
+            userid: userId,
+            status: 'accepted',
+            date: new Date(),
+          });
+        }
+
+        return doc;
+      }
+    );
+
+    return result;
+  }
+
+  async friendRejected(userId, friendId) {
+    // remove user-entry
+    await this.editDocumentById(userId, userSchema, async (doc) => {
+      doc.friends = doc.friends.filter(
+        (friend) => friend.userid?.toString() !== friendId
+      );
+      return doc;
+    });
+
+    // remove friend-entry
+    await this.editDocumentById(friendId, userSchema, async (doc) => {
+      doc.friends = doc.friends.filter(
+        (friend) => friend.userid?.toString() !== userId
+      );
+      return doc;
+    });
+
+    return result;
+  }
+
+  async friendRemove(userId, friendId) {
+    //user
+    await this.editDocumentById(userId, userSchema, async (doc) => {
+      doc.friends = doc.friends.filter(
+        (friend) => friend.userid?.toString() !== friendId
+      );
+      return doc;
+    });
+
+    //remove user in friendslist too
+    await this.editDocumentById(friendId, userSchema, async (doc) => {
+      doc.friends = doc.friends.filter(
+        (friend) => friend.userid?.toString() !== userId
+      );
+      return doc;
     });
 
     return result;

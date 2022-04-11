@@ -61,6 +61,8 @@ class CharacterService extends ServiceBase {
           name: docPokemon.name,
           stats: docPokemon.stats,
         });
+
+        return docChar;
       }
     );
 
@@ -78,6 +80,7 @@ class CharacterService extends ServiceBase {
         doc.pokemons = doc.pokemons.filter(
           (p) => p.pokemonid.toString() !== pokemonId
         );
+        return doc;
       }
     );
 
@@ -97,6 +100,7 @@ class CharacterService extends ServiceBase {
         );
 
         docPokemon.stats.hp += +amount;
+        return docChar;
       }
     );
 
@@ -126,6 +130,7 @@ class CharacterService extends ServiceBase {
             count: 1,
           });
         }
+        return docChar;
       }
     );
 
@@ -143,6 +148,7 @@ class CharacterService extends ServiceBase {
         if (charItem && charItem.count > 0) {
           charItem.count -= 1;
         }
+        return doc;
       }
     );
 
