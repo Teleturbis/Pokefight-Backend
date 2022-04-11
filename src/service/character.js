@@ -13,7 +13,7 @@ class CharacterService extends ServiceBase {
   async createCharacter(req) {
     await this.checkData(req);
 
-    const id = this.create(req.body, userSchema);
+    const id = await this.create(req.body, characterSchema);
 
     // todo add 5 random pokemons
     const pokemons = await pokemonSchema.find({});
@@ -25,11 +25,11 @@ class CharacterService extends ServiceBase {
       // [...Array(5).keys()].forEach(() => {
       //   await this.addPokemon(id, random());
       // });
-      await this.addPokemon(id, random());
-      await this.addPokemon(id, random());
-      await this.addPokemon(id, random());
-      await this.addPokemon(id, random());
-      await this.addPokemon(id, random());
+      await this.addPokemon(id, pokemons[random()]);
+      await this.addPokemon(id, pokemons[random()]);
+      await this.addPokemon(id, pokemons[random()]);
+      await this.addPokemon(id, pokemons[random()]);
+      await this.addPokemon(id, pokemons[random()]);
     } catch (error) {
       console.log('error', error);
     }

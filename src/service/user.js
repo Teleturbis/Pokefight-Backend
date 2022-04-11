@@ -3,6 +3,7 @@ import userSchema from '../model/user';
 import { BadRequestError, NotFoundError } from '../js/httpError';
 import { comparePassword, generatePassword } from '../js/util';
 import ServiceBase from './serviceBase';
+import charService from './character';
 
 class UserService extends ServiceBase {
   async createUser(userDto) {
@@ -13,7 +14,23 @@ class UserService extends ServiceBase {
 
     userDto.password = await generatePassword(userDto.password);
 
-    const id = this.create(userDto, userSchema);
+    const id = await this.create(userDto, userSchema);
+
+    try {
+      const freeSkins = ['blue', 'red', 'green'];
+      // todo create standard char
+      const req = {
+        body: {
+          name: userDto.username,
+          userid: id.toString(),
+          skin: freeSkins[Math.floor(Math.random() * freeSkins.length)], // todo
+        },
+        params: {},
+      };
+      await charService.createCharacter(req);
+    } catch (error) {
+      console.log('error', error);
+    }
 
     return id;
   }
