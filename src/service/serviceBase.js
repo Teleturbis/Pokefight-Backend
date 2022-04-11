@@ -55,7 +55,7 @@ export default class ServiceBase {
 
     const docEdited = await cbEditDocument(doc);
     if (docEdited) {
-      console.log('docEdited', docEdited);
+      // console.log('docEdited', docEdited);
       result = await schema.updateOne({ _id: doc._id }, docEdited);
     } else {
       result = await doc.save();

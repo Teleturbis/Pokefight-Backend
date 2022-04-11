@@ -72,6 +72,7 @@ export default class PokeSocketServer {
             },
           };
         };
+        this.logSockets();
 
         // this.io.volatile.emit('msg-received', msg); // volatile >> ignores disconnects, normal emit sends all stacked msgs while disconnected
         if (!room) this.io.emit('msg-received', createMsg(msg));
@@ -90,7 +91,38 @@ export default class PokeSocketServer {
         if (room) this.io.to(room).emit('battle-received', move);
       });
 
+      socket.on('battle-request-event', async (fromUser, toUser) => {
+        const toSocket = await this.getSocketofUser(toUser.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('battle-request-received', {
+            name: fromUser.name,
+            id: fromUser.id,
+          });
+      });
+
+      socket.on('battle-accept-event', async (user, battle) => {
+        const toSocket = await this.getSocketofUser(battle.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('battle-accept-received', {
+            name: user.name,
+            id: user.id,
+          });
+      });
+
+      socket.on('battle-reject-event', async (user, battle) => {
+        const toSocket = await this.getSocketofUser(battle.id);
+
+        if (toSocket)
+          this.io.to(toSocket).emit('battle-reject-received', {
+            name: user.name,
+            id: user.id,
+          });
+      });
+
       socket.on('friend-request-event', async (fromUser, toUser) => {
+        this.logSockets();
         const toSocket = await this.getSocketofUser(toUser.id);
 
         if (toSocket)
@@ -159,6 +191,11 @@ export default class PokeSocketServer {
   async getSocketofUser(userId) {
     const sockets = await this.io.fetchSockets();
     return sockets.find((socket) => socket.userId === userId)?.id;
+  }
+
+  async logSockets() {
+    const sockets = await this.io.fetchSockets();
+    sockets.forEach((socket) => console.log('socket', socket.id));
   }
 
   setTicInterval(time) {
