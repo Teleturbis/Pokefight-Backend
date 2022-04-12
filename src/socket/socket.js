@@ -30,6 +30,12 @@ export default class PokeSocketServer {
         `user connected >> socket: ${socket.id} - userId: ${socket.userId}`
       );
 
+      this.countActions++;
+      this.actionQueue.push({
+        id: socket.userId,
+        action: 'join',
+      });
+
       // set user in db online
       userService
         .setOnOffline(socket.userId, true)
@@ -45,6 +51,12 @@ export default class PokeSocketServer {
         console.log(
           `user disconnected >> socket: ${socket.id} - userId: ${socket.userId}`
         );
+
+        this.countActions++;
+        this.actionQueue.push({
+          id: socket.userId,
+          action: 'leave',
+        });
 
         // for friendslist and game -> emit disconnect
         this.io.emit('disconnect-received', socket.id);
