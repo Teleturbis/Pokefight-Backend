@@ -30,11 +30,11 @@ export default class PokeSocketServer {
         `user connected >> socket: ${socket.id} - userId: ${socket.userId}`
       );
 
-      this.countActions++;
-      this.actionQueue.push({
-        id: socket.userId,
-        action: 'join',
-      });
+      // this.countActions++;
+      // this.actionQueue.push({
+      //   id: socket.userId,
+      //   action: 'join',
+      // });
 
       // set user in db online
       userService
