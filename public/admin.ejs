@@ -17,14 +17,20 @@
       <input
         id="ipTicServer"
         type="number"
-        min="100"
-        step="1000"
-        value="5000"
+        min="5"
+        step="500"
+        value="<%= ticInterval %>"
       />
       <button type="button" onclick="setTicInterval()">Set TicInterval</button>
     </div>
     <div style="margin-top: 1rem">
-      <input id="ipTicSim" type="number" min="100" step="1000" value="5000" />
+      <input
+        id="ipTicSim"
+        type="number"
+        min="5"
+        step="500"
+        value="<%= intervalTimeActions %>"
+      />
       <button type="button" onclick="setSimInterval()">Set SimInterval</button>
     </div>
 

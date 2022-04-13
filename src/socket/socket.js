@@ -42,33 +42,13 @@ export default class PokeSocketServer {
         .then()
         .catch((error) => null /*console.log(error)*/);
 
-      socket.join(socket.userId); // fuer whispers
+      // ! auto join in userId-room
+      socket.join(socket.userId); // for whispers or direct messages (multi-tab-able)
 
       // emit all that new user online -> they should tell YOU their position to update the map with all online users
-      socket.broadcast.emit('connect-received', socket.id);
+      socket.broadcast.emit('connect-received', socket.userId);
 
-      socket.on('disconnect', () => {
-        console.log(
-          `user disconnected >> socket: ${socket.id} - userId: ${socket.userId}`
-        );
-
-        this.countActions++;
-        this.actionQueue.push({
-          id: socket.userId,
-          action: 'leave',
-        });
-
-        // for friendslist and game -> emit disconnect
-        this.io.emit('disconnect-received', socket.id);
-
-        // set user in db offline
-        if (socket.userId) {
-          userService
-            .setOnOffline(socket.userId, false)
-            .then()
-            .catch((error) => null /*console.log(error)*/);
-        }
-      });
+      socket.on('disconnect', () => this.disconnect(socket));
 
       socket.on('msg-event', (msg, room) => {
         if (room) console.log('room', room);
@@ -91,6 +71,11 @@ export default class PokeSocketServer {
         else this.io.to(room).emit('msg-received', createMsg(msg));
       });
 
+      socket.on('action-gamestate-event', (gamestate, room) => {
+        console.log('room', room);
+        if (room) this.io.to(room).emit('action-gamestate-received', gamestate);
+      });
+
       socket.on('action-event', (action, room) => {
         console.log('room', room);
         // this.io.volatile.emit('action-received', action); // volatile >> ignores disconnects, normal emit sends all stacked actions while disconnected
@@ -104,44 +89,32 @@ export default class PokeSocketServer {
       });
 
       socket.on('battle-request-event', async (fromUser, toUser) => {
-        const toSocket = await this.getSocketofUser(toUser.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('battle-request-received', {
-            name: fromUser.name,
-            id: fromUser.id,
-          });
+        this.io.to(toUser.id).emit('battle-request-received', {
+          name: fromUser.name,
+          id: fromUser.id,
+        });
       });
 
       socket.on('battle-accept-event', async (user, battle) => {
-        const toSocket = await this.getSocketofUser(battle.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('battle-accept-received', {
-            name: user.name,
-            id: user.id,
-          });
+        this.io.to(battle.id).emit('battle-accept-received', {
+          name: user.name,
+          id: user.id,
+        });
       });
 
       socket.on('battle-reject-event', async (user, battle) => {
-        const toSocket = await this.getSocketofUser(battle.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('battle-reject-received', {
-            name: user.name,
-            id: user.id,
-          });
+        this.io.to(battle.id).emit('battle-reject-received', {
+          name: user.name,
+          id: user.id,
+        });
       });
 
       socket.on('friend-request-event', async (fromUser, toUser) => {
         this.logSockets();
-        const toSocket = await this.getSocketofUser(toUser.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('friend-request-received', {
-            name: fromUser.name,
-            id: fromUser.id,
-          });
+        this.io.to(toUser.id).emit('friend-request-received', {
+          name: fromUser.name,
+          id: fromUser.id,
+        });
 
         // todo save friend request in db (pending)
         userService
@@ -151,13 +124,10 @@ export default class PokeSocketServer {
       });
 
       socket.on('friend-accept-event', async (user, friend) => {
-        const toSocket = await this.getSocketofUser(friend.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('friend-accept-received', {
-            name: user.name,
-            id: user.id,
-          });
+        this.io.to(friend.id).emit('friend-accept-received', {
+          name: user.name,
+          id: user.id,
+        });
 
         // todo save friend relationship in both users
         userService
@@ -167,13 +137,10 @@ export default class PokeSocketServer {
       });
 
       socket.on('friend-reject-event', async (user, friend) => {
-        const toSocket = await this.getSocketofUser(friend.id);
-
-        if (toSocket)
-          this.io.to(toSocket).emit('friend-reject-received', {
-            name: user.name,
-            id: user.id,
-          });
+        this.io.to(friend.id).emit('friend-reject-received', {
+          name: user.name,
+          id: user.id,
+        });
 
         // todo save friend relationship in both users
         userService
@@ -200,9 +167,36 @@ export default class PokeSocketServer {
     });
   }
 
-  async getSocketofUser(userId) {
+  async disconnect(socket, toUser) {
+    console.log(
+      `user disconnected >> socket: ${socket.id} - userId: ${socket.userId}`
+    );
+
+    this.countActions++;
+    this.actionQueue.push({
+      id: socket.userId,
+      action: 'leave',
+    });
+
+    // for friendslist and game -> emit disconnect
+    this.io.emit('disconnect-received', socket.id);
+
+    // set user in db offline if no socket with userid is connected
+    if (socket.userId) {
+      const toSockets = await this.getSocketsofUser(socket.userId);
+      if (!toSockets || toSockets.length === 0) {
+        console.log('disconnecting user -> setoffline!');
+        userService
+          .setOnOffline(socket.userId, false)
+          .then()
+          .catch((error) => null /*console.log(error)*/);
+      }
+    }
+  }
+
+  async getSocketsofUser(userId) {
     const sockets = await this.io.fetchSockets();
-    return sockets.find((socket) => socket.userId === userId)?.id;
+    return sockets.filter((socket) => socket.userId === userId);
   }
 
   async logSockets() {

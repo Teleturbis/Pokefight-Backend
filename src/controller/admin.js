@@ -2,6 +2,7 @@ import { NotFoundError } from '../js/httpError';
 import path from 'path';
 import * as sim from '../js/simulate';
 import BaseController from './controllerBase';
+import ejs from 'ejs';
 
 class AdminController extends BaseController {
   constructor() {
@@ -11,7 +12,19 @@ class AdminController extends BaseController {
 
   showPage(req, res, next) {
     try {
-      return res.status(200).sendFile(path.resolve('public/admin.html'));
+      const pathHtml = path.resolve('public/admin.ejs');
+      console.log('path', pathHtml);
+      console.log('ticInterval', req.pokeSocketServer.ticInterval);
+
+      ejs
+        .renderFile(pathHtml, {
+          ticInterval: req.pokeSocketServer.ticInterval,
+          intervalTimeActions: intervalTimeActions,
+        })
+        .then((html) => res.status(200).send(html))
+        .catch((err) => {
+          throw new Error(err);
+        });
     } catch (error) {
       next(error);
     }

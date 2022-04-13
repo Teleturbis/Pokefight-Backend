@@ -29,6 +29,7 @@
   ☐ whisper
   ☐ tics -> goes to all players, even the one that triggered the action (userID in every action?)
   ☐ friend goes online -> emit to all friends (green light)
+  ☐ disconnect -> auto-logout can be problematic cuz of possible delay -> check socketlist, if user is twice in socketlist, the do not logout
 
 ☐ express
   ✔ ! routes-base ! @done(22-04-08 12:04)
