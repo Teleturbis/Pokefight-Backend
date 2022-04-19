@@ -25,7 +25,7 @@ export default class PokeSocketServer {
       // console.log('socket.handshake.query', socket.handshake.query);
     });
 
-    this.io.on('connection', (socket) => {
+    this.io.on('connection', async (socket) => {
       console.log(
         `user connected >> socket: ${socket.id} - userId: ${socket.userId}`
       );
@@ -46,7 +46,11 @@ export default class PokeSocketServer {
       socket.join(socket.userId); // for whispers or direct messages (multi-tab-able)
 
       // emit all that new user online -> they should tell YOU their position to update the map with all online users
-      socket.broadcast.emit('connect-received', socket.userId);
+      this.io.emit(
+        'connect-received',
+        socket.userId,
+        await this.createSocketList()
+      );
 
       socket.on('disconnect', () => this.disconnect(socket));
 
@@ -111,42 +115,64 @@ export default class PokeSocketServer {
 
       socket.on('friend-request-event', async (fromUser, toUser) => {
         this.logSockets();
-        this.io.to(toUser.id).emit('friend-request-received', {
-          name: fromUser.name,
-          id: fromUser.id,
-        });
 
         // todo save friend request in db (pending)
-        userService
-          .friendRequest(fromUser.id, toUser.id)
-          .then()
-          .catch((error) => null /*console.log(error)*/);
+        await userService.friendRequest(fromUser.id, toUser.id);
+        // .then()
+        // .catch((error) => null /*console.log(error)*/);
+
+        this.io.to(toUser.id).emit(
+          'friend-request-received',
+          {
+            name: fromUser.name,
+            id: fromUser.id,
+          },
+          await this.createSocketList()
+        );
       });
 
       socket.on('friend-accept-event', async (user, friend) => {
-        this.io.to(friend.id).emit('friend-accept-received', {
-          name: user.name,
-          id: user.id,
-        });
-
         // todo save friend relationship in both users
-        userService
-          .friendAccepted(user.id, friend.id)
-          .then()
-          .catch((error) => null /*console.log(error)*/);
+        await userService.friendAccepted(user.id, friend.id);
+        // .then()
+        // .catch((error) => null /*console.log(error)*/);
+
+        this.io.to(friend.id).emit(
+          'friend-accept-received',
+          {
+            name: user.name,
+            id: user.id,
+          },
+          await this.createSocketList()
+        );
+        // sich selbst auch informieren, um die Friendslist zu aktualisieren
+        socket.emit(
+          'friend-accept-received',
+          user,
+          await this.createSocketList()
+        );
       });
 
       socket.on('friend-reject-event', async (user, friend) => {
-        this.io.to(friend.id).emit('friend-reject-received', {
-          name: user.name,
-          id: user.id,
-        });
+        console.log(user, friend);
+        await userService.friendRejected(user.id, friend.id);
+        // .then()
+        // .catch((error) => null /*console.log(error)*/);
 
-        // todo save friend relationship in both users
-        userService
-          .friendRejected(user.id, friend.id)
-          .then()
-          .catch((error) => null /*console.log(error)*/);
+        this.io.to(friend.id).emit(
+          'friend-reject-received',
+          {
+            name: user.name,
+            id: user.id,
+          },
+          await this.createSocketList()
+        );
+        // sich selbst auch informieren, um die Friendslist zu aktualisieren
+        socket.emit(
+          'friend-reject-received',
+          user,
+          await this.createSocketList()
+        );
       });
 
       socket.on('join-room', (room, cb) => {
@@ -179,7 +205,11 @@ export default class PokeSocketServer {
     });
 
     // for friendslist and game -> emit disconnect
-    this.io.emit('disconnect-received', socket.id);
+    this.io.emit(
+      'disconnect-received',
+      socket.id,
+      await this.createSocketList()
+    );
 
     // set user in db offline if no socket with userid is connected
     if (socket.userId) {
@@ -202,6 +232,26 @@ export default class PokeSocketServer {
   async logSockets() {
     const sockets = await this.io.fetchSockets();
     sockets.forEach((socket) => console.log('socket', socket.id));
+  }
+
+  async createSocketList() {
+    const sockets = await this.io.fetchSockets();
+    const names = sockets.map((socket) => socket.username);
+
+    const list = sockets
+      .filter(({ username }, index) => !names.includes(username, index + 1)) // remove duplicates
+      .map((socket) => {
+        return {
+          // socket: socket.id,
+          userId: socket.userId,
+          username: socket.username,
+        };
+      })
+      .sort((a, b) => a.username.localeCompare(b.username));
+
+    console.log('list', list);
+
+    return list;
   }
 
   setTicInterval(time) {

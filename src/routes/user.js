@@ -67,9 +67,16 @@ routes.put(
 
 routes.put(
   '/:id/friend-request/:friendId',
-  validate([param('id').isString(), param('userId').isString()]),
+  validate([param('id').isString(), param('friendId').isString()]),
   checkUserExists,
   controller.friendRequest
+);
+
+routes.get(
+  '/:id/friends',
+  validate([param('id').isString()]),
+  checkUserExists,
+  controller.getFriends
 );
 
 routes.get(

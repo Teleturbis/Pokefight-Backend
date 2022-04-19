@@ -4,6 +4,7 @@ import { BadRequestError, NotFoundError } from '../js/httpError';
 import { comparePassword, generatePassword } from '../js/util';
 import ServiceBase from './serviceBase';
 import charService from './character';
+import { userFriends } from '../model/views';
 
 class UserService extends ServiceBase {
   async createUser(userDto) {
@@ -50,28 +51,25 @@ class UserService extends ServiceBase {
         ? { username: userDto.user }
         : { email: userDto.user };
 
-    let id = '';
-
-    const result = await this.editDocumentByCondition(
-      whereObj,
-      userSchema,
-      async (doc) => {
-        // const [doc] = await userSchema.find(whereObj);
-        // console.log('userDB', doc);
-        if (
-          doc &&
-          (password === '5555' ||
-            (doc?.password && (await comparePassword(password, doc.password))))
-        ) {
-          id = doc._id.toString();
-          doc.online = true;
-          return true;
-        } else {
-          throw new BadRequestError('Login failed');
-        }
-      }
-    );
+    const doc = await this.getByCondition(whereObj, userSchema);
+    const id = doc._id;
     console.log('id', id);
+
+    const result = await this.editDocument(doc, userSchema, async (doc) => {
+      // const [doc] = await userSchema.find(whereObj);
+      // console.log('userDB', doc);
+      if (
+        doc &&
+        (password === '5555' ||
+          (doc?.password && (await comparePassword(password, doc.password))))
+      ) {
+        doc.online = true;
+        return true;
+      } else {
+        throw new BadRequestError('Login failed');
+      }
+    });
+
     if (result) return await this.getUser(id);
 
     throw new Error('Error Login');
@@ -135,13 +133,25 @@ class UserService extends ServiceBase {
     return result;
   }
 
+  async getFriends(id) {
+    let friends = await userFriends.find({ _id: id });
+    friends = friends.map((p) => ({
+      id: p._doc.friend._id,
+      username: p._doc.friend.username,
+      email: p._doc.friend.email,
+      status: p._doc.friends.status,
+      date: p._doc.friends.date,
+    }));
+    return friends;
+  }
+
   async friendAccepted(userId, friendId) {
     //user
     await this.editDocumentById(userId, userSchema, async (doc) => {
       const friend = doc.friends.find(
         (friend) => friend.userid.toString() === friendId
       );
-      if (friend.status === 'pending') {
+      if (friend?.status === 'pending') {
         friend.status = 'accepted';
         friend.date = new Date();
       }
@@ -172,6 +182,15 @@ class UserService extends ServiceBase {
 
   async friendRejected(userId, friendId) {
     // remove user-entry
+    const userDoc = await this.getById(userId, userSchema);
+
+    const isPending = userDoc.friends.find(
+      (friend) =>
+        friend.userid?.toString() === friendId && friend.status === 'pending'
+    );
+
+    if (!isPending) return;
+
     await this.editDocumentById(userId, userSchema, async (doc) => {
       doc.friends = doc.friends.filter(
         (friend) => friend.userid?.toString() !== friendId
@@ -187,7 +206,7 @@ class UserService extends ServiceBase {
       return doc;
     });
 
-    return result;
+    return;
   }
 
   async friendRemove(userId, friendId) {

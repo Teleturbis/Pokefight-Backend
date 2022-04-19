@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { BadRequestError, NotFoundError } from '../js/httpError';
 
 export default class ServiceBase {
   async create(dto, schema) {
@@ -21,12 +22,17 @@ export default class ServiceBase {
   }
 
   async getById(id, schema) {
-    const ds = await schema.findById(id);
-    // const itemDB = pokedex.find((item) => item.id === +id);
+    const doc = await schema.findById(id);
+    return doc;
+  }
 
-    // console.log('ds', ds);
+  async getByCondition(condition, schema) {
+    const [doc] = await schema.find(condition);
 
-    return ds;
+    if (!doc) {
+      throw new NotFoundError();
+    }
+    return doc;
   }
 
   async deleteById(id, schema) {
@@ -43,10 +49,10 @@ export default class ServiceBase {
     return await this.editDocument(doc, schema, cbEditDocument);
   }
 
-  async editDocumentByCondition(condition, schema, cbEditDocument) {
-    const [doc] = await schema.find(condition);
-    return await this.editDocument(doc, schema, cbEditDocument);
-  }
+  // async editDocumentByCondition(condition, schema, cbEditDocument) {
+  //   const [doc] = await schema.find(condition);
+  //   return await this.editDocument(doc, schema, cbEditDocument);
+  // }
 
   async editDocument(doc, schema, cbEditDocument) {
     // console.log('doc', doc);
